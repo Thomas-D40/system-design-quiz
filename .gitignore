@@ -1,0 +1,10 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vite
+
+# Local editor/tooling config (not needed in the repo)
+.claude
+.idea

@@ -1,0 +1,1843 @@
+[
+  {
+    "id": "aa-microservices-001",
+    "domain": "architecture-archetypes",
+    "topic": "microservices",
+    "difficulty": "medium",
+    "question": "Which is a genuine cost of microservices that a monolith avoids?",
+    "choices": [
+      { "id": "a", "text": "The need to deploy the whole system at once for any change." },
+      { "id": "b", "text": "Network calls between services, adding latency and partial-failure modes." },
+      { "id": "c", "text": "The inability to use more than one programming language." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That's a monolith trait — microservices let you deploy services independently.",
+      "b": "Correct — splitting into services turns in-process calls into network calls, introducing latency, retries, and partial failures.",
+      "c": "Polyglot stacks are actually easier with microservices, not harder."
+    }
+  },
+  {
+    "id": "aa-monolith-001",
+    "domain": "architecture-archetypes",
+    "topic": "monolith",
+    "difficulty": "easy",
+    "question": "What is a legitimate advantage of a well-structured monolith for a small team?",
+    "choices": [
+      { "id": "a", "text": "Independent scaling of every module in isolation." },
+      { "id": "b", "text": "Simple local development, atomic deploys, and no network boundaries to debug." },
+      { "id": "c", "text": "Guaranteed fault isolation between features." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Independent scaling is a microservices strength; a monolith scales as one unit.",
+      "b": "Correct — one deployable, in-process calls, and a single codebase keep early development and debugging simple.",
+      "c": "A crash or memory leak in a monolith can take down the whole process; fault isolation is weaker, not stronger."
+    }
+  },
+  {
+    "id": "aa-eventdriven-001",
+    "domain": "architecture-archetypes",
+    "topic": "event-driven",
+    "difficulty": "medium",
+    "question": "In an event-driven architecture, what does 'choreography' mean (versus 'orchestration')?",
+    "choices": [
+      { "id": "a", "text": "A central coordinator tells each service what to do next." },
+      { "id": "b", "text": "Services react to events independently, with no central coordinator." },
+      { "id": "c", "text": "All services share a single synchronous transaction." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That's orchestration — a central brain drives the workflow.",
+      "b": "Correct — in choreography each service emits and reacts to events on its own, with the workflow emerging from those reactions.",
+      "c": "Event-driven systems typically avoid shared synchronous transactions in favour of eventual consistency."
+    }
+  },
+  {
+    "id": "aa-cqrs-001",
+    "domain": "architecture-archetypes",
+    "topic": "cqrs",
+    "difficulty": "hard",
+    "question": "What is the core idea of CQRS?",
+    "choices": [
+      { "id": "a", "text": "Use separate models (and often stores) for writes (commands) and reads (queries)." },
+      { "id": "b", "text": "Replace all synchronous calls with message queues." },
+      { "id": "c", "text": "Store every change as an immutable event log." }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — CQRS splits the write model from the read model so each can be optimised independently.",
+      "b": "Async messaging often pairs with CQRS but isn't its definition.",
+      "c": "That's event sourcing, which is frequently combined with CQRS but is a distinct pattern."
+    }
+  },
+  {
+    "id": "aa-hexagonal-001",
+    "domain": "architecture-archetypes",
+    "topic": "hexagonal",
+    "difficulty": "medium",
+    "question": "In hexagonal (ports & adapters) architecture, what is a 'port'?",
+    "choices": [
+      { "id": "a", "text": "A concrete database driver used by the domain." },
+      { "id": "b", "text": "An interface defined by the domain that adapters implement." },
+      { "id": "c", "text": "The TCP port the application listens on." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "A database driver is an adapter (an implementation), not a port.",
+      "b": "Correct — a port is an abstraction the domain owns; adapters (DB, HTTP, etc.) plug into it, keeping the domain free of infrastructure.",
+      "c": "Despite the name, hexagonal 'ports' are interfaces, not network ports."
+    }
+  },
+  {
+    "id": "aa-layered-001",
+    "domain": "architecture-archetypes",
+    "topic": "layered",
+    "difficulty": "easy",
+    "question": "What is a common criticism of strict layered (n-tier) architecture?",
+    "choices": [
+      { "id": "a", "text": "It makes unit testing impossible." },
+      { "id": "b", "text": "A simple change can ripple through every layer ('sinkhole' anti-pattern)." },
+      { "id": "c", "text": "It forbids the use of a database." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Layering doesn't prevent testing; it can even help by isolating concerns.",
+      "b": "Correct — when layers only pass calls through, a trivial change touches each layer, adding ceremony without value.",
+      "c": "The persistence layer is exactly where the database lives."
+    }
+  },
+  {
+    "id": "aa-eventsourcing-001",
+    "domain": "architecture-archetypes",
+    "topic": "event-sourcing",
+    "difficulty": "hard",
+    "question": "In event sourcing, how is the current state of an entity obtained?",
+    "choices": [
+      { "id": "a", "text": "By reading a single mutable row that is updated in place." },
+      { "id": "b", "text": "By replaying (folding) the ordered sequence of events for that entity." },
+      { "id": "c", "text": "By querying a cache that is the only source of truth." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That's the traditional CRUD approach event sourcing deliberately avoids.",
+      "b": "Correct — the event log is the source of truth; current state is derived by replaying events (often snapshotted for speed).",
+      "c": "A cache may exist for performance, but the event log, not the cache, is authoritative."
+    }
+  },
+  {
+    "id": "aa-microservices-002",
+    "domain": "architecture-archetypes",
+    "topic": "microservices",
+    "difficulty": "hard",
+    "question": "Why is a shared database across multiple microservices considered an anti-pattern?",
+    "choices": [
+      { "id": "a", "text": "It couples services through the schema, breaking independent deployability." },
+      { "id": "b", "text": "Databases cannot handle more than one client connection." },
+      { "id": "c", "text": "It makes the services impossible to monitor." }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — a shared schema means one service's migration can break another, defeating the independence microservices are meant to provide.",
+      "b": "Databases handle many connections; that isn't the concern.",
+      "c": "Monitoring is unaffected by whether the database is shared."
+    }
+  },
+  {
+    "id": "aa-saga-001",
+    "domain": "architecture-archetypes",
+    "topic": "saga",
+    "difficulty": "medium",
+    "question": "An e-commerce checkout spans three services. An orchestrated saga runs local transactions in order: Order Service creates the order, Payment Service charges the card, then Inventory Service reserves stock. Each local transaction commits independently (there is no distributed 2PC). The Inventory step fails because the item is out of stock. According to the saga pattern, what must happen to restore consistency?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Sequence diagram of an orchestrated saga: order created and committed, payment charged and committed, inventory reservation fails, then the orchestrator runs compensating transactions in reverse order to refund the payment and cancel the order.",
+      "source": "sequenceDiagram\n    participant O as Orchestrator\n    participant Ord as Order Svc\n    participant Pay as Payment Svc\n    participant Inv as Inventory Svc\n    O->>Ord: Create order\n    Ord-->>O: committed (T1)\n    O->>Pay: Charge card\n    Pay-->>O: committed (T2)\n    O->>Inv: Reserve stock\n    Inv-->>O: FAILED (out of stock)\n    Note over O: run compensations in reverse\n    O->>Pay: Refund charge (C2)\n    Pay-->>O: compensated\n    O->>Ord: Cancel order (C1)\n    Ord-->>O: compensated"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "The orchestrator invokes compensating transactions for the already-committed steps in reverse order: refund the payment, then cancel the order, leaving the system in a consistent end state."
+      },
+      {
+        "id": "b",
+        "text": "A central coordinator issues a global ROLLBACK so the underlying database engines atomically undo the order creation and the payment charge, returning the system to its pre-checkout state as if those local transactions had never committed."
+      },
+      {
+        "id": "c",
+        "text": "The saga retries the failed Inventory step indefinitely with exponential backoff, keeping the order and payment in place, on the principle that saga steps must eventually succeed and therefore never need to compensate."
+      },
+      {
+        "id": "d",
+        "text": "Nothing extra is required: because each prior step committed locally and is durable, the order and the payment are preserved as successful work and the failed reservation can simply be ignored."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A saga replaces a distributed transaction with a sequence of local transactions, each paired with a compensating transaction that semantically undoes its effect. When a step fails, the orchestrator executes the compensations for the previously committed steps, typically in reverse order (refund the charge, then cancel the order), reaching a consistent end state without any 2PC.",
+      "b": "Tempting because it sounds like an ACID rollback, but it is wrong: the defining property of a saga is that there is no global transaction and no coordinator able to undo already-committed local transactions. Those commits are durable; consistency is restored by forward-running compensating actions, not by a database-level ROLLBACK.",
+      "c": "Plausible because retry-with-backoff is a genuine saga tactic for transient failures, but out-of-stock is a business failure that will not resolve by retrying. Sagas absolutely do compensate; claiming they 'never need to compensate' contradicts the pattern's defining mechanism, and indefinite retry would leave the customer charged for an order that can never be fulfilled.",
+      "d": "Wrong: ignoring the failure leaves the customer charged and an order recorded for stock that cannot be reserved, which is an inconsistent state. The durability of the committed steps is precisely why compensation is required, you must actively undo them rather than leave them dangling."
+    }
+  },
+  {
+    "id": "aa-api-gateway-001",
+    "domain": "architecture-archetypes",
+    "topic": "api-gateway",
+    "difficulty": "medium",
+    "question": "A mobile app calls a microservices backend. Today, each microservice independently validates JWTs, enforces its own rate limits, and the app must call three separate services to render one screen. The team puts an API gateway in front of the services. Which capability is the PRIMARY reason an API gateway is chosen over simply adding a Layer-4 load balancer in front of the same services?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A client sends one request through an API gateway, which authenticates, rate-limits, then fans out to three backend microservices and aggregates their responses into one reply.",
+      "source": "graph LR\n  C[Mobile App] -->|1 request| G[API Gateway]\n  G -->|auth + rate limit| G\n  G --> A[Service A]\n  G --> B[Service B]\n  G --> D[Service C]\n  A --> G\n  B --> G\n  D --> G\n  G -->|aggregated response| C"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "It terminates client requests at a single L7 entry point, centralizing cross-cutting concerns (authentication, rate limiting, routing) and request aggregation, with routing decisions based on application-layer details like paths, headers, and JWTs."
+      },
+      {
+        "id": "b",
+        "text": "It distributes incoming connections across healthy backend instances using algorithms like round-robin or least-connections, removing failed nodes from rotation."
+      },
+      {
+        "id": "c",
+        "text": "It caches backend responses and serves static assets from edge locations geographically close to users to reduce latency."
+      },
+      {
+        "id": "d",
+        "text": "It guarantees exactly-once delivery of requests to backend services by persisting each request in a durable queue before forwarding it."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The defining role of an API gateway is to be a single application-layer (L7) entry point that centralizes cross-cutting concerns (auth, rate limiting, routing) and can aggregate or compose calls to multiple services, deciding behavior based on URL paths, headers, and tokens. That is exactly what removes per-service JWT validation and collapses three client calls into one.",
+      "b": "Tempting because it is true and gateways often sit behind or include a load balancer, but distributing connections across healthy nodes is precisely the plain L4 load-balancer job the question contrasts against. It does no auth, no L7 routing, and no aggregation, so it is not the reason to choose a gateway.",
+      "c": "This describes a CDN / edge cache. While some gateways add caching, edge caching of static assets is not the distinguishing purpose of the gateway pattern, and it does not address the auth, rate-limiting, or request-aggregation needs in the scenario.",
+      "d": "Incorrect. An API gateway is a synchronous request router, not a durable message broker; it does not provide exactly-once delivery and does not persist each request in a queue. Exactly-once semantics belong to messaging/idempotency designs, not the gateway pattern."
+    }
+  },
+  {
+    "id": "aa-circuit-breaker-001",
+    "domain": "architecture-archetypes",
+    "topic": "circuit-breaker",
+    "difficulty": "medium",
+    "question": "Service A calls a downstream payment provider that has started timing out. A circuit breaker wraps the call. After the failure threshold is crossed, the breaker trips to OPEN and stays there for a cooldown period; once it expires it moves to HALF-OPEN. In the HALF-OPEN state, what does the breaker do, and what determines its next transition?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "State diagram of a circuit breaker: Closed transitions to Open when the failure threshold is exceeded; Open transitions to Half-Open after a cooldown timeout; Half-Open transitions back to Closed if trial requests succeed, or back to Open if a trial request fails.",
+      "source": "stateDiagram-v2\n    [*] --> Closed\n    Closed --> Open: failures exceed threshold\n    Open --> HalfOpen: cooldown timeout elapses\n    HalfOpen --> Closed: trial requests succeed\n    HalfOpen --> Open: a trial request fails"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "It allows a limited number of trial requests through to the downstream: if they succeed it transitions back to CLOSED (resuming normal traffic), and if one fails it returns to OPEN and restarts the cooldown."
+      },
+      {
+        "id": "b",
+        "text": "It blocks all requests and fails fast exactly as in the OPEN state, and transitions to CLOSED automatically only after a second, longer cooldown timer expires regardless of downstream health."
+      },
+      {
+        "id": "c",
+        "text": "It lets all traffic through unrestricted to measure the full error rate under real load, and transitions to CLOSED or OPEN based on whether that aggregate rate stays under the configured threshold."
+      },
+      {
+        "id": "d",
+        "text": "It queues incoming requests in a durable buffer without calling the downstream, then replays the entire queue at once when the downstream is confirmed healthy, guaranteeing no request is lost."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. HALF-OPEN is the probing state: the breaker permits a small, capped number of trial requests to test whether the downstream has recovered. If those trials succeed the breaker closes and normal traffic resumes; if a trial fails it re-opens and restarts the cooldown, protecting the still-unhealthy dependency from being hammered. (Some implementations decide on a failure rate across the probe sample rather than a single failure, but the principle -- close on probe success, re-open on probe failure -- is the same.)",
+      "b": "Tempting because OPEN does fail fast, but HALF-OPEN is precisely the state that does NOT block everything: it admits trial requests. Closing is driven by the success of those probes, not by a blind timer that ignores downstream health, which would risk slamming a still-broken dependency with full traffic.",
+      "c": "Wrong because letting all traffic through is exactly what HALF-OPEN avoids. The point of the limited-probe design is to test recovery with minimal load; admitting full traffic to measure an aggregate error rate would defeat the fail-fast protection and could overwhelm a dependency that is only partially recovered.",
+      "d": "Incorrect. A circuit breaker is a fail-fast guard, not a durable queue or store-and-forward buffer. It rejects (or short-circuits) calls while OPEN rather than persisting and replaying them; buffering and guaranteed delivery are messaging-system concerns, not part of the breaker pattern."
+    }
+  },
+  {
+    "answer": "a",
+    "id": "aa-outbox-001",
+    "domain": "architecture-archetypes",
+    "topic": "outbox",
+    "difficulty": "medium",
+    "question": "An Order Service must do two things when an order is placed: persist the order row in its PostgreSQL database AND publish an \"OrderPlaced\" event to Kafka so downstream services react. Today it commits the DB transaction and then calls the Kafka producer. Occasionally the process crashes after the DB commit but before the publish succeeds, so the order exists but no event is ever emitted (the dual-write problem). The team adopts the transactional outbox pattern. What is the essential mechanism that makes event publishing reliable?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Sequence showing today's failure: the Order Service commits the order to PostgreSQL, the database acknowledges the commit, then the service crashes before it can publish the OrderPlaced event to Kafka, so the order persists but no event is ever emitted.",
+      "source": "sequenceDiagram\n  participant S as Order Service\n  participant DB as PostgreSQL\n  participant K as Kafka\n  S->>DB: write order row, commit\n  DB-->>S: commit OK (order durable)\n  Note over S: process crashes here\n  S--xK: publish OrderPlaced (never sent)\n  Note over DB,K: order exists, but no event emitted"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "The service writes the order row and an event row into an outbox table within the SAME local database transaction, so both commit atomically; a separate relay then reads the outbox and publishes to Kafka, retrying until it succeeds."
+      },
+      {
+        "id": "b",
+        "text": "The service wraps the database commit and the Kafka publish in a two-phase commit (XA) transaction so the broker and the database are updated atomically as one distributed transaction."
+      },
+      {
+        "id": "c",
+        "text": "The service publishes the OrderPlaced event to Kafka FIRST, and only writes the order row to the database after the broker acknowledges the message, so a crash can never leave an order without its event."
+      },
+      {
+        "id": "d",
+        "text": "The service makes the Kafka producer idempotent and retries the publish with exponential backoff after the database commit, guaranteeing the event is eventually delivered even if the process crashes."
+      }
+    ],
+    "explanations": {
+      "a": "Correct. The outbox pattern collapses the two writes into one: the business row and the event are inserted in a single local ACID transaction against the same database, so either both persist or neither does. A separate relay (polling the outbox table or tailing the DB change log via CDC) then publishes the captured events to the broker and marks them done, retrying safely until delivery succeeds. This eliminates the dual-write window entirely because there is no second commit target at the moment of the business write. Note that relay delivery is at-least-once, so downstream consumers must be idempotent.",
+      "b": "Tempting because XA/2PC genuinely makes multiple resources commit atomically, but it is the approach the outbox is designed to avoid. Many brokers (including Kafka) do not support XA well, 2PC adds a blocking coordinator and serious availability and latency costs, and it reintroduces distributed-transaction fragility. The outbox deliberately uses only a single local transaction, not a distributed one.",
+      "c": "Reversing the order does not fix the dual-write problem, it just moves the window: now a crash after the publish but before the DB write leaves an event with no corresponding order, which is arguably worse. There are still two independent commit targets and no atomicity between them.",
+      "d": "Idempotent producers and retries help with duplicate suppression and transient failures, but they do nothing if the process crashes after the DB commit and never gets to publish, or crashes mid-retry. The event was never durably recorded anywhere, so there is nothing to retry from. The outbox fixes this precisely by persisting the event durably inside the same transaction first."
+    }
+  },
+  {
+    "id": "aa-strangler-fig-001",
+    "domain": "architecture-archetypes",
+    "topic": "strangler-fig",
+    "difficulty": "medium",
+    "question": "A team must modernize a large legacy monolith that handles billing, reporting, and notifications. The business cannot tolerate a multi-month feature freeze, and a full rewrite-and-swap on a single cutover date is judged too risky. They adopt the strangler fig pattern. Which approach correctly characterizes how this pattern carries out the migration?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A facade in front of the legacy monolith routes each incoming request either to a newly built service for already-migrated functionality or to the legacy monolith for the rest; as more capabilities are migrated, routing shifts toward the new services until the monolith can be retired.",
+      "source": "graph LR\n  C[Client] --> F[Routing Facade]\n  F -->|migrated: billing| N[New Billing Service]\n  F -->|not yet migrated| L[Legacy Monolith]\n  N -.->|over time more routes move to new services| F\n  L -.->|shrinks until retired| F"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "Put a facade in front of the legacy system that routes each request to a new replacement service if its capability has already been migrated, or to the old monolith otherwise, replacing capabilities incrementally until the monolith can be retired."
+      },
+      {
+        "id": "b",
+        "text": "Freeze the legacy system, build a complete replacement in parallel, and switch all traffic to the new system in a single big-bang cutover once feature parity is reached."
+      },
+      {
+        "id": "c",
+        "text": "Wrap the monolith in an anti-corruption layer that translates between old and new data models but keeps every capability permanently running inside the original monolith."
+      },
+      {
+        "id": "d",
+        "text": "Split the monolith into microservices all at once by extracting every module simultaneously behind a shared database, then deploy them together."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The strangler fig pattern interposes a facade (router/proxy) in front of the legacy system. Each capability is rebuilt as a new service and the facade is reconfigured to send that traffic to the new service, while everything not yet migrated still routes to the monolith. The new system incrementally takes over functionality until the legacy system is fully replaced and decommissioned, avoiding a risky big-bang rewrite.",
+      "b": "This is exactly the big-bang rewrite the strangler fig pattern is meant to avoid. Freezing the old system and switching everything at once on a single date reintroduces the high-risk, all-or-nothing cutover; the strangler fig deliberately migrates incrementally so traffic shifts piece by piece with a working system at every step.",
+      "c": "Tempting because an anti-corruption layer is a real, related pattern often used alongside strangler fig to translate between old and new models. But it is a translation boundary, not a migration strategy. The whole point of strangler fig is to progressively move capabilities out of the monolith and eventually retire it, not to keep everything running inside the original system forever.",
+      "d": "This describes a big-bang decomposition, and the shared database makes it worse by coupling all the new services through one schema. Strangler fig is defined by incremental, one-capability-at-a-time replacement behind a routing facade, not by extracting every module simultaneously and deploying them together."
+    }
+  },
+  {
+    "id": "aa-bounded-context-001",
+    "domain": "architecture-archetypes",
+    "topic": "bounded-context",
+    "difficulty": "medium",
+    "question": "In Domain-Driven Design, what does a 'bounded context' primarily define?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A boundary within which a particular domain model and its ubiquitous language are consistent and unambiguous."
+      },
+      {
+        "id": "b",
+        "text": "The set of database tables that a single microservice is allowed to write to."
+      },
+      {
+        "id": "c",
+        "text": "A reusable utility library shared by every team across the organization."
+      },
+      {
+        "id": "d",
+        "text": "The network perimeter (firewall and subnet) that isolates one service from another."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — a bounded context delimits where a specific model and its ubiquitous language hold a single, consistent meaning; the same word (e.g. 'Customer') can mean different things in different contexts.",
+      "b": "Tempting because a context often owns its own data, but a bounded context is a model/language boundary, not a definition in terms of tables; data ownership is a consequence, not the definition.",
+      "c": "A bounded context is the opposite of a shared catch-all library — it deliberately scopes a model to avoid one universal model muddying meaning across teams.",
+      "d": "Bounded contexts are a conceptual/modeling boundary, not a networking or infrastructure boundary."
+    }
+  },
+  {
+    "id": "aa-aggregate-001",
+    "domain": "architecture-archetypes",
+    "topic": "aggregate",
+    "difficulty": "hard",
+    "question": "In DDD, an aggregate is a cluster of entities and value objects with one entity designated as the aggregate root. What is the defining rule about how aggregates are accessed and kept consistent?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "External objects may only hold references to and invoke methods on the aggregate root, which enforces all invariants so the whole aggregate is a single transactional consistency boundary."
+      },
+      {
+        "id": "b",
+        "text": "Every entity inside the aggregate exposes public setters so callers can modify any member directly for performance, and invariants are checked later by a background job."
+      },
+      {
+        "id": "c",
+        "text": "An aggregate must always map one-to-one to a single database table so that loading it never requires a join."
+      },
+      {
+        "id": "d",
+        "text": "Aggregates may freely hold direct object references into the internals of other aggregates to keep related data tightly coupled and consistent in one transaction."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — outside code talks only to the root, which guards the aggregate's invariants; the aggregate is the unit of transactional consistency, and changes to it commit atomically.",
+      "b": "Wrong — exposing internals via public setters and deferring invariant checks defeats the aggregate's purpose, which is to enforce consistency at the boundary at the moment of change.",
+      "c": "An aggregate is a modeling boundary, not a storage layout; it can span multiple tables. One-to-one table mapping is neither required nor part of the definition.",
+      "d": "Wrong — aggregates reference other aggregates only by identity (id), not by direct object reference into their internals, and consistency across aggregates is typically eventual, not within one transaction."
+    }
+  },
+  {
+    "id": "aa-anti-corruption-layer-001",
+    "domain": "architecture-archetypes",
+    "topic": "anti-corruption-layer",
+    "difficulty": "medium",
+    "question": "A new Ordering context must integrate with a creaky legacy ERP whose data model uses cryptic codes and inconsistent semantics. The team introduces an anti-corruption layer (ACL). What is its primary purpose?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "The new Ordering context talks to an anti-corruption layer, which translates between the clean domain model and the legacy ERP's model, so the legacy concepts never leak into the new domain.",
+      "source": "graph LR\n  N[Ordering Context] --> ACL[Anti-Corruption Layer]\n  ACL --> L[Legacy ERP]\n  ACL -.->|translates legacy model to clean domain model| N"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "To translate between the two models at the boundary so the legacy system's concepts and quirks do not leak into and corrupt the new context's clean domain model."
+      },
+      {
+        "id": "b",
+        "text": "To encrypt all traffic flowing to the legacy ERP so sensitive order data cannot be intercepted."
+      },
+      {
+        "id": "c",
+        "text": "To cache legacy responses so the new context can keep serving reads when the ERP is offline."
+      },
+      {
+        "id": "d",
+        "text": "To replace the legacy ERP outright by reimplementing its features inside the new Ordering context."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — an ACL is a translation boundary: it maps the foreign/legacy model onto the new context's own model (and back), isolating the new domain so it stays clean and is not forced to adopt the legacy system's concepts.",
+      "b": "Encryption is a transport-security concern; 'anti-corruption' refers to protecting the domain model from a foreign model, not protecting bytes on the wire.",
+      "c": "Caching for availability is a separate concern; an ACL may sit in front of the legacy system but its defining job is model translation, not resilience caching.",
+      "d": "An ACL integrates with and shields against the legacy system; it does not reimplement or replace it (that would be closer to strangler fig)."
+    }
+  },
+  {
+    "id": "aa-database-per-service-001",
+    "domain": "architecture-archetypes",
+    "topic": "database-per-service",
+    "difficulty": "medium",
+    "question": "A microservices team adopts the 'database-per-service' pattern. What is the core principle it enforces, and what is a direct consequence the team must then handle?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Each service privately owns its data store and other services may access that data only through its API; as a result, queries spanning services can no longer use a single SQL join and must be composed at the API/event level."
+      },
+      {
+        "id": "b",
+        "text": "All services must use the same database engine and schema, which guarantees referential integrity is enforced by foreign keys across the whole system."
+      },
+      {
+        "id": "c",
+        "text": "Every service gets its own database, which lets the team run distributed ACID transactions across services using foreign keys without any coordination cost."
+      },
+      {
+        "id": "d",
+        "text": "Services share one physical database but each uses a different schema, so a single transaction can still atomically update data owned by several services."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — the pattern makes each service the sole owner of its data, reachable only via its API/events. This preserves loose coupling and independent deployability, but cross-service queries lose the convenience of a single join and must be assembled via API composition, replication, or events.",
+      "b": "Wrong — that describes a shared database/schema, the opposite of database-per-service, and cross-service foreign keys are exactly what this pattern avoids.",
+      "c": "Wrong — separate databases mean you cannot span them with cross-service foreign keys or a single ACID transaction; consistency typically becomes eventual (e.g. via sagas), which is a cost, not a free win.",
+      "d": "A shared physical database lets services couple through it and enables cross-service transactions — precisely the coupling database-per-service is designed to prevent."
+    }
+  },
+  {
+    "id": "aa-shared-kernel-001",
+    "domain": "architecture-archetypes",
+    "topic": "shared-kernel",
+    "difficulty": "hard",
+    "question": "Two teams own separate bounded contexts but agree to a 'shared kernel'. What does a shared kernel mean, and what governance does it require?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A small, explicitly shared subset of the model/code that both contexts depend on, which neither team may change unilaterally — modifications require consultation and coordination between the teams."
+      },
+      {
+        "id": "b",
+        "text": "A single team becomes the upstream supplier and the other simply conforms to whatever model it publishes, with no shared ownership of code."
+      },
+      {
+        "id": "c",
+        "text": "Each context keeps a completely independent copy of the entire model so the two can evolve with zero coordination."
+      },
+      {
+        "id": "d",
+        "text": "A shared physical database that both contexts read and write directly, coupling them through the schema."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — a shared kernel is a deliberately small overlap of model and code that two contexts co-own; because both depend on it, changes are tightly coordinated and cannot be made by one team in isolation.",
+      "b": "That describes the customer/supplier (or conformist) relationship, not a shared kernel; a shared kernel implies joint ownership of the shared piece, not one-way conformance.",
+      "c": "Fully independent duplicate models with no overlap is the opposite of a shared kernel, which is defined by an intentionally shared, jointly governed subset.",
+      "d": "A shared kernel is about a shared model/code artifact under joint governance, not a shared database; sharing a database directly is the shared-DB anti-pattern."
+    }
+  },
+  {
+    "id": "aa-domain-events-001",
+    "domain": "architecture-archetypes",
+    "topic": "domain-events",
+    "difficulty": "medium",
+    "question": "When designing domain events to communicate between bounded contexts, which statement best captures their nature and naming?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A domain event is an immutable record that something meaningful already happened, named in the past tense (e.g. OrderPlaced), and other contexts react to it asynchronously."
+      },
+      {
+        "id": "b",
+        "text": "A domain event is a synchronous command instructing another context to perform an action, named as an imperative (e.g. PlaceOrder)."
+      },
+      {
+        "id": "c",
+        "text": "A domain event is a request-response query that returns the current state of an aggregate to the caller."
+      },
+      {
+        "id": "d",
+        "text": "A domain event is a database trigger that mutates rows in other services' tables directly when a row changes."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — a domain event captures a fact that has already occurred, is immutable, and is named in the past tense; interested contexts subscribe and react, enabling loose, eventually-consistent coupling.",
+      "b": "That describes a command (imperative, expects an action to be performed). Events state what happened; commands ask for something to happen — a key DDD distinction.",
+      "c": "A query asks for current state and expects a response; a domain event is a one-way notification of a past fact, not a request-response read.",
+      "d": "Reaching into other services' tables via triggers is direct coupling through the database — the antithesis of communicating via published domain events."
+    }
+  },
+  {
+    "id": "aa-modular-monolith-001",
+    "domain": "architecture-archetypes",
+    "topic": "modular-monolith",
+    "difficulty": "medium",
+    "question": "A team chooses a modular monolith instead of microservices. Which statement most accurately describes what a modular monolith provides?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A single deployable unit internally partitioned into modules with enforced boundaries and explicit interfaces, giving strong logical separation while keeping in-process calls and one deploy/runtime."
+      },
+      {
+        "id": "b",
+        "text": "Multiple independently deployable services that happen to share one Git repository but run as separate processes."
+      },
+      {
+        "id": "c",
+        "text": "A monolith with no internal structure where any class can call any other class freely, relying on developer discipline alone for organization."
+      },
+      {
+        "id": "d",
+        "text": "An architecture where each module has its own database and is scaled independently across separate hosts."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — a modular monolith is one deployable/process with well-defined modules, enforced boundaries, and explicit interfaces between them. You get much of the decoupling benefit of services without the network, deployment, and operational overhead.",
+      "b": "Independently deployable, separately-running services are microservices (a monorepo is just a code-organization choice); a modular monolith deploys and runs as one unit.",
+      "c": "An unstructured 'big ball of mud' is exactly what a modular monolith avoids; the defining feature is enforced module boundaries, not mere convention.",
+      "d": "Per-module databases and independent scaling across hosts describe microservices; a modular monolith runs in a single process and typically shares one runtime."
+    }
+  },
+  {
+    "id": "aa-microkernel-plugin-001",
+    "domain": "architecture-archetypes",
+    "topic": "microkernel-plugin",
+    "difficulty": "medium",
+    "question": "An IDE is built so that core editing is minimal and language support, linters, and themes are added as plugins discovered at runtime. This is the microkernel (plugin) architecture. What is its defining structural idea?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A minimal core system exposes a plugin contract; multiple independent plugins register against that contract to extend functionality without the core depending on them.",
+      "source": "graph TD\n  Core[Core System / Microkernel] --> Contract[Plugin Contract]\n  P1[Plugin A] --> Contract\n  P2[Plugin B] --> Contract\n  P3[Plugin C] --> Contract"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "A minimal core provides the base functionality and a defined extension contract, while independent plugins register against that contract to add features without the core depending on any specific plugin."
+      },
+      {
+        "id": "b",
+        "text": "Every feature is compiled directly into the core so the system ships as one tightly integrated binary with no extension points."
+      },
+      {
+        "id": "c",
+        "text": "The system is split into equal peer services that each call one another over the network with no central component."
+      },
+      {
+        "id": "d",
+        "text": "Plugins replace the core entirely at runtime, so there is no stable kernel and each plugin must reimplement the base functionality."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — microkernel architecture keeps a small, stable core plus an extension contract; optional capabilities are plugins that plug into that contract. The core knows the contract but not the concrete plugins, enabling extensibility and isolation.",
+      "b": "A single monolithic binary with no extension points is the opposite of microkernel; the whole point is pluggable, independently added features.",
+      "c": "Equal peer services communicating over a network describes microservices/peer-to-peer, not a core-plus-plugins (microkernel) structure.",
+      "d": "The kernel is the stable foundation; plugins extend it, they do not replace it or each reimplement the base — a stable core is essential to the pattern."
+    }
+  },
+  {
+    "id": "aa-context-mapping-001",
+    "domain": "architecture-archetypes",
+    "topic": "context-mapping",
+    "difficulty": "hard",
+    "question": "While decomposing a system, the upstream Payments context publishes its model, and the downstream Reporting context chooses to adopt that model as-is rather than build any translation layer to shield its own model. Which context-mapping relationship does this describe?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Conformist — the downstream adopts the upstream's model wholesale and builds no anti-corruption translation, trading away modeling autonomy to cut integration cost."
+      },
+      {
+        "id": "b",
+        "text": "Anti-corruption layer — the downstream translates the upstream model into its own to stay isolated."
+      },
+      {
+        "id": "c",
+        "text": "Shared kernel — both contexts jointly own and co-evolve a shared subset of the model."
+      },
+      {
+        "id": "d",
+        "text": "Separate ways — the two contexts decide they have no meaningful integration and go fully independent."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — when a downstream context conforms to the upstream's model rather than building a translation layer, that is the conformist relationship: the downstream gives up modeling autonomy to reduce integration cost.",
+      "b": "An ACL is precisely what conformist declines to build; if Reporting translated the model to protect its own, it would be using an anti-corruption layer, not conforming.",
+      "c": "Shared kernel requires joint ownership and co-evolution of a shared model subset; here Reporting merely adopts what Payments publishes — one-way conformance, not shared ownership.",
+      "d": "Separate ways means the contexts deliberately do not integrate at all; here they do integrate, with Reporting consuming the upstream model."
+    }
+  },
+  {
+    "id": "aa-service-decomposition-001",
+    "domain": "architecture-archetypes",
+    "topic": "service-decomposition",
+    "difficulty": "hard",
+    "question": "A team is deciding where to draw service boundaries. They notice that 'placing an order' and 'reserving inventory' always change together, are owned by different teams' code paths, and one rarely changes without the other. Which decomposition heuristic best guides drawing the boundary here?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Favor high cohesion and low coupling, aligning service boundaries with bounded contexts so that things that change together live together and cross-boundary chatter is minimized."
+      },
+      {
+        "id": "b",
+        "text": "Decompose strictly by technical layer — one service for all controllers, one for all business logic, one for all data access — so each tier scales on its own."
+      },
+      {
+        "id": "c",
+        "text": "Create the largest possible number of tiny services so every class becomes its own service, maximizing independent deployability."
+      },
+      {
+        "id": "d",
+        "text": "Draw boundaries to match the existing database tables, giving each table its own service so persistence stays simple."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — good decomposition maximizes cohesion within a service and minimizes coupling across services, typically aligning boundaries with bounded contexts so frequently co-changing behavior stays together and you avoid chatty, distributed-transaction-prone boundaries.",
+      "b": "Slicing by technical layer (controllers/logic/data) creates layered services that must all change together for any feature — high coupling, low cohesion — the opposite of what good decomposition seeks.",
+      "c": "Nano-services (one per class) explode network calls and operational overhead while fragmenting cohesive behavior; more services is not the goal, appropriate boundaries are.",
+      "d": "Boundaries should follow business capabilities/bounded contexts, not the incidental shape of existing tables; table-driven boundaries entrench data coupling and ignore behavioral cohesion."
+    }
+  },
+  {
+    "id": "aa-pub-sub-decoupling-001",
+    "domain": "architecture-archetypes",
+    "topic": "pub-sub-decoupling",
+    "difficulty": "easy",
+    "question": "In a publish/subscribe messaging model, what is the defining characteristic that distinguishes it from a point-to-point (work-queue) model?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Each published message is delivered to every interested subscriber, and the publisher has no knowledge of who (if anyone) consumes it."
+      },
+      {
+        "id": "b",
+        "text": "Each message is delivered to exactly one consumer, which competes with other consumers for messages on the queue."
+      },
+      {
+        "id": "c",
+        "text": "The publisher blocks and waits for a synchronous acknowledgment from each subscriber before continuing."
+      },
+      {
+        "id": "d",
+        "text": "Subscribers must poll the publisher directly over HTTP to discover new messages."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Pub/sub fans a single message out to all subscribers of a topic, and publishers are decoupled from subscriber identity and count. This is the essence of topic-based broadcast decoupling.",
+      "b": "This describes the competing-consumers / point-to-point queue model, where each message goes to one consumer only. It is the contrast case, not pub/sub.",
+      "c": "Pub/sub is inherently asynchronous; publishers fire-and-forget to the broker. Synchronous blocking on every subscriber would destroy the decoupling that pub/sub exists to provide.",
+      "d": "Pub/sub uses a broker that pushes (or lets subscribers pull) from a topic; subscribers do not poll the publisher directly. Direct publisher polling would recouple the parties."
+    }
+  },
+  {
+    "id": "aa-broker-vs-bus-esb-001",
+    "domain": "architecture-archetypes",
+    "topic": "broker-vs-bus-esb",
+    "difficulty": "medium",
+    "question": "A team is debating a 'message broker' (e.g., a dumb pipe like RabbitMQ/Kafka) versus an 'enterprise service bus (ESB)'. Why is the ESB widely considered an anti-pattern in modern microservice architectures?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The ESB centralizes routing, transformation, and orchestration logic in the middleware, creating a smart-pipe bottleneck and a single point of coupling that contradicts 'smart endpoints, dumb pipes'."
+      },
+      {
+        "id": "b",
+        "text": "The ESB cannot guarantee message ordering, whereas a plain broker always guarantees global total ordering."
+      },
+      {
+        "id": "c",
+        "text": "The ESB is slower purely because it uses XML, and switching to JSON eliminates the architectural concern entirely."
+      },
+      {
+        "id": "d",
+        "text": "The ESB forces every service to share one database, which a message broker avoids."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The ESB anti-pattern arises from putting business logic (routing, orchestration, transformation) into a centralized smart pipe. This recouples services, creates an operational bottleneck, and inverts the 'smart endpoints, dumb pipes' principle that favors a thin broker.",
+      "b": "Ordering is not the distinguishing issue; plain brokers typically guarantee ordering only per-partition/queue, not global total order. The real problem with an ESB is centralized logic, not ordering semantics.",
+      "c": "The serialization format is incidental. Replacing XML with JSON does nothing to fix the structural problem of centralizing logic in the bus.",
+      "d": "A shared database is a separate anti-pattern. An ESB is about message-flow middleware, not about forcing a shared data store."
+    }
+  },
+  {
+    "id": "aa-api-composition-aggregation-001",
+    "domain": "architecture-archetypes",
+    "topic": "api-composition-aggregation",
+    "difficulty": "medium",
+    "question": "An API gateway implements the API Composition pattern, fan-out querying three downstream services and joining their results in memory for one client request. What is the principal drawback of this approach compared to maintaining a precomputed read model (e.g., via CQRS)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "In-memory joins of large result sets are inefficient, and the composed query's availability and latency degrade as the product of the participating services."
+      },
+      {
+        "id": "b",
+        "text": "API composition makes it impossible to ever return data from more than one service in a single response."
+      },
+      {
+        "id": "c",
+        "text": "API composition requires every downstream service to share the same database schema."
+      },
+      {
+        "id": "d",
+        "text": "API composition can only be implemented synchronously over gRPC, never over REST."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The composer must join data in application memory, which is costly for large datasets, and overall availability/latency suffers because the request depends on all participating services responding. A precomputed read model (CQRS) avoids the runtime fan-out join.",
+      "b": "The opposite is true: composition's whole purpose is to combine data from multiple services into one response. This option inverts the pattern.",
+      "c": "Composition specifically lets each service own its own schema; the composer queries via APIs, not a shared schema. Shared schema is the anti-pattern composition helps avoid.",
+      "d": "Composition is transport-agnostic and is commonly done over REST or gRPC. Tying it to a single protocol is incorrect."
+    }
+  },
+  {
+    "id": "aa-backend-for-frontend-001",
+    "domain": "architecture-archetypes",
+    "topic": "backend-for-frontend",
+    "difficulty": "medium",
+    "question": "What problem does the Backend-for-Frontend (BFF) pattern primarily solve that a single shared general-purpose API gateway does not?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It gives each client type (e.g., mobile, web, desktop) a tailored backend so payloads, aggregation, and chattiness can be optimized per-experience without coupling all clients to one shared contract."
+      },
+      {
+        "id": "b",
+        "text": "It removes the need for any authentication, since the BFF trusts its client implicitly."
+      },
+      {
+        "id": "c",
+        "text": "It guarantees stronger data consistency than downstream services by holding a master copy of all data."
+      },
+      {
+        "id": "d",
+        "text": "It eliminates the downstream microservices by absorbing all of their business logic into one tier."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A BFF is a dedicated backend per frontend/client type, letting each be optimized (response shape, number of round-trips, aggregation) independently. A single shared gateway forces a one-size-fits-all contract that compromises some clients.",
+      "b": "A BFF still authenticates and authorizes requests; it is often where token translation happens. It does not waive auth.",
+      "c": "A BFF is an orchestration/aggregation layer, not a system of record. It does not own a master copy of data nor provide stronger consistency than the services behind it.",
+      "d": "A BFF composes and adapts calls to downstream services; it does not absorb their business logic. The services remain the owners of domain logic."
+    }
+  },
+  {
+    "id": "aa-graphql-gateway-001",
+    "domain": "architecture-archetypes",
+    "topic": "graphql-gateway",
+    "difficulty": "medium",
+    "question": "A GraphQL gateway is placed in front of several microservices. Which concern is MOST specific to GraphQL (versus a plain REST gateway) and must be explicitly mitigated?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Arbitrarily nested client queries can trigger the N+1 problem and unbounded query depth/complexity, requiring batching (e.g., DataLoader), depth limits, and cost analysis."
+      },
+      {
+        "id": "b",
+        "text": "GraphQL cannot return errors, so all failures must be inferred from missing fields."
+      },
+      {
+        "id": "c",
+        "text": "GraphQL mandates a separate URL endpoint per query, making routing explode combinatorially."
+      },
+      {
+        "id": "d",
+        "text": "GraphQL forbids caching of any kind, unlike REST."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Because clients compose their own nested queries, a naive resolver layer issues redundant downstream calls (N+1) and clients can submit deep/expensive queries. Mitigations include per-request batching (DataLoader), depth/complexity limits, and query cost analysis.",
+      "b": "GraphQL has a well-defined errors array in its response envelope. Failures are explicit, not inferred from missing fields.",
+      "c": "GraphQL conventionally exposes a single endpoint and selects fields via the query body, the opposite of an endpoint explosion.",
+      "d": "GraphQL can be cached (persisted queries, normalized client caches, CDN with persisted queries). It is harder than REST URL caching, but not forbidden."
+    }
+  },
+  {
+    "id": "aa-grpc-vs-rest-001",
+    "domain": "architecture-archetypes",
+    "topic": "grpc-vs-rest",
+    "difficulty": "medium",
+    "question": "An internal, high-throughput service-to-service call needs low latency and strong typing; a public-facing API needs broad client compatibility and human-debuggable payloads. Which mapping of gRPC vs REST/JSON best fits, and why?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "gRPC internally (binary Protobuf over HTTP/2 with multiplexing and codegen contracts) and REST/JSON externally (ubiquitous tooling, browser/curl friendliness, easy versioning)."
+      },
+      {
+        "id": "b",
+        "text": "REST/JSON internally because Protobuf cannot be used between two of your own services, and gRPC externally because browsers natively speak gRPC."
+      },
+      {
+        "id": "c",
+        "text": "gRPC for both, because JSON is incapable of representing nested objects."
+      },
+      {
+        "id": "d",
+        "text": "REST for both, because HTTP/2 multiplexing offers no benefit over HTTP/1.1 for any workload."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. gRPC's Protobuf binary framing over HTTP/2 gives compact payloads, multiplexing, and generated typed stubs, ideal for chatty internal calls. REST/JSON's universal tooling and readability make it the pragmatic choice at the public edge (browsers cannot natively call gRPC without grpc-web/a proxy).",
+      "b": "Both claims are false: Protobuf/gRPC is commonly used between your own services, and browsers do NOT natively speak gRPC (they need grpc-web or a gateway).",
+      "c": "JSON represents nested objects perfectly well. The trade-off is payload size, schema enforcement, and performance, not capability to nest.",
+      "d": "HTTP/2 multiplexing meaningfully reduces head-of-line blocking and connection overhead for high-throughput internal traffic, so this dismissal is incorrect."
+    }
+  },
+  {
+    "id": "aa-consumer-driven-contract-testing-001",
+    "domain": "architecture-archetypes",
+    "topic": "consumer-driven-contract-testing",
+    "difficulty": "hard",
+    "question": "In consumer-driven contract testing (e.g., Pact), what is verified and where, and what failure does it specifically prevent that end-to-end integration tests address poorly?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Each consumer publishes a contract of the requests it makes and responses it expects; the provider replays those expectations against itself in isolation, catching breaking provider changes early without a full integrated environment."
+      },
+      {
+        "id": "b",
+        "text": "The provider dictates a schema that all consumers must adopt, and consumers run that schema against a shared staging database."
+      },
+      {
+        "id": "c",
+        "text": "Both consumer and provider are deployed together and a human manually clicks through the UI to confirm compatibility."
+      },
+      {
+        "id": "d",
+        "text": "It load-tests the provider to verify it meets latency SLAs under peak traffic."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The consumer's expectations form the contract; the provider verifies it can satisfy every consumer's contract in isolation (often in CI). This catches provider-side breaking changes deterministically and cheaply, where flaky, slow, fully-integrated E2E tests struggle.",
+      "b": "This describes provider-driven contracts, the inverse. The whole point of consumer-driven is that consumers express what they actually need, not that the provider imposes a schema.",
+      "c": "Contract testing is automated and does not require co-deploying both sides or manual UI clicking; that describes manual integration testing.",
+      "d": "Contract testing verifies structural/behavioral compatibility of the API, not performance. Latency SLAs are the domain of load testing."
+    }
+  },
+  {
+    "id": "aa-event-notification-vs-state-transfer-001",
+    "domain": "architecture-archetypes",
+    "topic": "event-notification-vs-state-transfer",
+    "difficulty": "hard",
+    "question": "When designing events for pub/sub between services, what is the key trade-off between 'thin' event-notification events (just an ID/type) and 'fat' event-carried-state-transfer events (full payload)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Thin events minimize coupling and payload size but force consumers to call back to the source for details (more load, possible staleness); fat events let consumers act autonomously but increase coupling to the payload schema and risk data duplication."
+      },
+      {
+        "id": "b",
+        "text": "Fat events are always superior because larger messages are processed faster by brokers."
+      },
+      {
+        "id": "c",
+        "text": "Thin events guarantee exactly-once delivery, whereas fat events guarantee at-most-once."
+      },
+      {
+        "id": "d",
+        "text": "There is no difference; the payload size of an event has no effect on consumer coupling or load."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Thin notification events keep messages small and decoupled from the producer's data model but require a callback/query to fetch details (extra load on the source, potential read-back-staleness). Fat (state-transfer) events embed the data so consumers are autonomous, at the cost of coupling consumers to the payload schema and replicating state.",
+      "b": "Larger messages are not processed faster; this conflates payload size with throughput and ignores the coupling trade-off entirely.",
+      "c": "Delivery guarantees are a property of the broker and ack protocol, not of how much data the event carries. This option invents a false correlation.",
+      "d": "Payload design directly affects coupling and downstream load, which is the entire point of the notification-vs-state-transfer distinction."
+    }
+  },
+  {
+    "id": "aa-graphql-gateway-vs-bff-001",
+    "domain": "architecture-archetypes",
+    "topic": "graphql-gateway-vs-bff",
+    "difficulty": "medium",
+    "question": "A team already runs per-client BFFs and now proposes adding a single federated GraphQL gateway. Which statement most accurately captures how these relate?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A GraphQL gateway can serve as a flexible aggregation layer where clients self-select fields, potentially reducing the need for many bespoke BFFs, but it shifts complexity into schema federation and query-cost governance."
+      },
+      {
+        "id": "b",
+        "text": "A GraphQL gateway and a BFF are mutually exclusive and can never coexist in one system."
+      },
+      {
+        "id": "c",
+        "text": "A GraphQL gateway removes all need for authorization because field-level resolvers are inherently secure."
+      },
+      {
+        "id": "d",
+        "text": "BFFs and GraphQL gateways both require every downstream service to expose a GraphQL schema."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Because GraphQL lets each client request exactly the fields it needs from one schema, a federated gateway can reduce the proliferation of hand-tuned BFFs, but the complexity reappears as schema federation, resolver fan-out, and query-cost/depth governance.",
+      "b": "They can coexist: some architectures use a GraphQL BFF, or a federated gateway behind which client-specific concerns still live. They are not mutually exclusive.",
+      "c": "Field-level resolvers still require explicit authorization checks; GraphQL does not make access control automatic and can actually widen the attack surface.",
+      "d": "Downstream services can be REST, gRPC, or anything; the gateway adapts them. Neither pattern mandates GraphQL all the way down."
+    }
+  },
+  {
+    "id": "aa-bulkhead-001",
+    "domain": "architecture-archetypes",
+    "topic": "bulkhead",
+    "difficulty": "medium",
+    "question": "A monolithic service exposes both a fast 'browse catalog' endpoint and a slow 'generate report' endpoint. Both run on a single shared thread pool of 50 threads. When report traffic spikes, every thread blocks on slow report work and browse requests start timing out too. The team applies the bulkhead pattern. What does it do, and why does it help?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Incoming requests are split by type: browse requests draw from a dedicated browse thread pool and report requests draw from a separate report thread pool, so exhaustion of the report pool cannot starve browse requests.",
+      "source": "graph LR\n  I[Incoming requests] --> B[Browse pool 30 threads]\n  I --> R[Report pool 20 threads]\n  B --> S1[Browse handler]\n  R --> S2[Report handler]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "It partitions resources (e.g., separate thread pools or connection pools) per workload, so exhaustion of one partition cannot starve the others."
+      },
+      {
+        "id": "b",
+        "text": "It trips after a failure threshold and rejects all calls to the slow endpoint for a cooldown period, then probes for recovery."
+      },
+      {
+        "id": "c",
+        "text": "It retries failed report requests with exponential backoff so they eventually complete without blocking browse traffic."
+      },
+      {
+        "id": "d",
+        "text": "It caches report results so repeated report requests never re-enter the shared thread pool."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The bulkhead pattern isolates resources into independent partitions (named after a ship's watertight compartments). Giving browse and report work their own thread/connection pools means a flood of slow report requests can only exhaust the report pool, leaving the browse pool intact so browse requests keep flowing.",
+      "b": "That describes a circuit breaker, which fails fast based on a failure threshold and cooldown. A breaker stops calling an unhealthy dependency; it does not partition local resources so one workload can't starve another. The problem here is resource contention, not a failing downstream.",
+      "c": "Retry with backoff addresses transient failures, not resource isolation. Retrying slow report work would, if anything, add more load to the shared pool. It does nothing to stop report work from consuming all threads and starving browse requests.",
+      "d": "Caching can reduce report load but doesn't isolate resources: a cache miss storm or uncacheable reports would still drain the shared pool and starve browse traffic. The defining bulkhead mechanism is partitioning, not caching."
+    }
+  },
+  {
+    "id": "aa-retry-dlq-001",
+    "domain": "architecture-archetypes",
+    "topic": "retry-dlq",
+    "difficulty": "medium",
+    "question": "A consumer pulls messages from a queue. One message repeatedly fails processing because of a malformed payload (a 'poison message'). The consumer keeps redelivering and retrying it, blocking progress on the partition/queue. What is the standard remedy involving a dead-letter queue (DLQ)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "After a bounded number of failed delivery attempts, move the message to a dead-letter queue so the consumer can proceed, while the failed message is retained for inspection and later reprocessing."
+      },
+      {
+        "id": "b",
+        "text": "Immediately move every message to the DLQ on its first failure so the main queue never blocks, and reprocess the entire DLQ on a fixed schedule."
+      },
+      {
+        "id": "c",
+        "text": "Discard the failing message silently after the first attempt so the consumer is never blocked by poison messages."
+      },
+      {
+        "id": "d",
+        "text": "Route the message to the DLQ, then have the DLQ automatically re-enqueue it into the main queue with no attempt limit until it eventually succeeds."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A DLQ is a sideline for messages that exceed a configured maximum number of delivery/processing attempts. Off-loading the poison message after N tries unblocks the main queue while preserving the bad message (with its failure context) for debugging, alerting, or manual/automated reprocessing later.",
+      "b": "Moving to the DLQ on the very first failure defeats retries, which exist to absorb transient errors (a brief network blip, a momentary lock). You'd dead-letter messages that would have succeeded on a second attempt. The retry limit should be greater than one before dead-lettering.",
+      "c": "Silently discarding loses data and hides bugs. The whole point of a DLQ is retention: you keep the failed message so you can diagnose the root cause and potentially reprocess it. Dropping it provides no operational visibility.",
+      "d": "Auto re-enqueuing with no attempt limit recreates the original poison-message loop, just with an extra hop. A DLQ is a holding area requiring deliberate (often manual or guarded) reprocessing after the defect is fixed, not an unbounded automatic retry channel."
+    }
+  },
+  {
+    "id": "aa-idempotent-receiver-001",
+    "domain": "architecture-archetypes",
+    "topic": "idempotent-receiver",
+    "difficulty": "hard",
+    "question": "A payment service consumes 'ChargeCard' messages from an at-least-once broker, so duplicates are possible (e.g., after a redelivery). The team makes the receiver idempotent. Which implementation correctly achieves idempotent processing of a non-naturally-idempotent operation like charging a card?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Persist a unique message/operation id with the side effect in the same transaction, and check that id before acting so a duplicate is detected and skipped."
+      },
+      {
+        "id": "b",
+        "text": "Configure the broker for exactly-once delivery, which removes all duplicates so the receiver needs no deduplication logic."
+      },
+      {
+        "id": "c",
+        "text": "Wrap the charge in a retry-with-backoff loop, since retrying the same message is inherently idempotent."
+      },
+      {
+        "id": "d",
+        "text": "Make the producer send each message only once by disabling redelivery, eliminating duplicates at the source."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. An idempotent receiver records the processed message's unique id (idempotency key) atomically with the side effect — typically a unique constraint or a dedup table written in the same transaction as the charge. On redelivery it sees the id already exists and skips re-charging, making repeated delivery of the same message produce the same single effect.",
+      "b": "True end-to-end exactly-once delivery across independent systems is generally unattainable; brokers that advertise it do so within narrow boundaries and still rely on idempotent consumers in practice. Relying on the broker to erase all duplicates is the trap — the receiver must still deduplicate.",
+      "c": "Retrying does not make an operation idempotent; it can actively cause the very duplicates you're trying to tolerate. Charging a card is not naturally idempotent — running it twice charges twice. Idempotency must come from dedup logic keyed on the operation id, not from retrying.",
+      "d": "You cannot reliably guarantee single delivery: the producer can crash and resend, the broker can redeliver after an unacknowledged consume, and networks drop acks. At-least-once is the realistic contract, which is exactly why the receiver — not the producer — must be made idempotent."
+    }
+  },
+  {
+    "id": "aa-throttling-001",
+    "domain": "architecture-archetypes",
+    "topic": "throttling",
+    "difficulty": "medium",
+    "question": "A public API wants to protect its backend from being overwhelmed and to enforce fair usage per client. It applies throttling (rate limiting). Conceptually, how does throttling protect the system, and what does a well-behaved client see when it exceeds its limit?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It caps the request rate a client may sustain; over-limit requests are rejected (commonly HTTP 429) or delayed, often with a Retry-After hint, shielding the backend from overload."
+      },
+      {
+        "id": "b",
+        "text": "It opens a circuit after repeated downstream failures and fails fast until the dependency recovers."
+      },
+      {
+        "id": "c",
+        "text": "It queues every excess request in a durable buffer and guarantees all of them are eventually processed, so clients never receive an error."
+      },
+      {
+        "id": "d",
+        "text": "It spreads requests evenly across backend replicas using least-connections so no single replica is overloaded."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Throttling enforces a maximum request rate per client (or globally), shedding or delaying excess load to keep the backend within safe capacity and to enforce fairness. The conventional response for an over-limit request is HTTP 429 Too Many Requests, frequently with a Retry-After header telling a cooperative client when to try again.",
+      "b": "That's a circuit breaker, which reacts to downstream failure, not to request volume. Throttling acts on inbound rate regardless of whether the backend is currently failing; the two patterns address different problems and are often used together.",
+      "c": "Throttling deliberately rejects or delays excess load (load shedding) rather than promising to process everything — durable buffering of all overflow would just defer the overload and risk unbounded queues. Returning 429 is a feature, not a failure, of rate limiting.",
+      "d": "That describes load balancing across replicas, which distributes traffic but doesn't bound the total admitted rate. Even perfectly balanced traffic can exceed aggregate capacity; throttling is what caps the volume itself."
+    }
+  },
+  {
+    "id": "aa-service-discovery-001",
+    "domain": "architecture-archetypes",
+    "topic": "service-discovery",
+    "difficulty": "medium",
+    "question": "In a dynamic deployment, service instances start, stop, and move across hosts with ephemeral IPs (e.g., autoscaled containers). A caller needs to find healthy instances of 'inventory-service' without hardcoding addresses. What is the core role of service discovery here?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Inventory service instances register themselves and their health with a service registry; a caller queries the registry to obtain the current set of healthy instance addresses before making a call.",
+      "source": "graph LR\n  I1[inventory instance 1] -->|register| R[Service Registry]\n  I2[inventory instance 2] -->|register| R\n  C[Caller] -->|lookup inventory-service| R\n  R -->|healthy addresses| C\n  C --> I1"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "Instances register their network location (and health) with a registry; callers query the registry by logical service name to resolve the current set of healthy instances dynamically."
+      },
+      {
+        "id": "b",
+        "text": "It pins each service to a fixed static IP recorded in a config file that operators edit on every deployment."
+      },
+      {
+        "id": "c",
+        "text": "It encrypts traffic between caller and callee using mutual TLS so addresses never need to be known."
+      },
+      {
+        "id": "d",
+        "text": "It caps the request rate to each instance so no instance is overwhelmed during scale-out."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Service discovery maintains a registry that instances populate (self-registration or a registrar/health-check agent) with their location and health. Callers look up a logical name like 'inventory-service' and get back the live set of healthy instances, so they never hardcode ephemeral addresses. This can be client-side (caller queries the registry then load-balances) or server-side (a router/LB does it).",
+      "b": "Static IPs in a config file are exactly what discovery replaces. In a dynamic environment instances move and their addresses change; manual edits don't scale and go stale immediately on the next autoscale or reschedule event.",
+      "c": "Mutual TLS secures the connection but doesn't tell you where the instances are. You still need discovery to resolve the logical name to a current address before any (encrypted) call can be made.",
+      "d": "That's throttling/rate limiting. It controls how much traffic each instance receives, not how callers locate healthy instances. It's an orthogonal concern to discovery."
+    }
+  },
+  {
+    "id": "aa-sidecar-001",
+    "domain": "architecture-archetypes",
+    "topic": "sidecar",
+    "difficulty": "medium",
+    "question": "A team wants to add TLS termination, metrics, and log shipping to several services written in different languages, without reimplementing that logic in each. They adopt the sidecar pattern. What is the defining characteristic of a sidecar, and why is it attractive here?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A pod contains an application container and a sidecar container that share the pod's lifecycle and localhost network; cross-cutting concerns like TLS and metrics run in the sidecar alongside the app.",
+      "source": "graph LR\n  subgraph Pod\n    A[App container] ---|localhost| S[Sidecar container]\n  end\n  S -->|TLS, metrics, logs| E[External systems]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "A helper container co-deployed with the application in the same unit (sharing its lifecycle and localhost), handling cross-cutting concerns out-of-process so they're language-agnostic and reusable."
+      },
+      {
+        "id": "b",
+        "text": "A single shared gateway process that all services route their inbound traffic through to centralize authentication."
+      },
+      {
+        "id": "c",
+        "text": "A library linked into each service's binary so the cross-cutting logic runs in-process for maximum performance."
+      },
+      {
+        "id": "d",
+        "text": "A background batch job that periodically scrapes each service's metrics from a central scheduler."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A sidecar is a separate process/container deployed alongside the main application in the same pod/host, sharing its lifecycle and a local network namespace (localhost). Pushing TLS, metrics, and logging into the sidecar makes those concerns language-agnostic and reusable across polyglot services without changing application code.",
+      "b": "A single shared gateway is the API gateway / centralized-edge model, not a sidecar. The sidecar is decentralized — one instance attached to each service instance — which is precisely what avoids a shared chokepoint and keeps the concern local to each app.",
+      "c": "A linked library runs in-process and is language-specific, which is exactly the duplication the team wants to avoid across different languages. The sidecar's value is being out-of-process so the same component works regardless of the app's language.",
+      "d": "A periodic external batch job is neither co-located with the app instance nor part of its request path/lifecycle. A sidecar runs continuously beside the app and shares its deployment unit, which a scheduled scraper does not."
+    }
+  },
+  {
+    "id": "aa-service-mesh-001",
+    "domain": "architecture-archetypes",
+    "topic": "service-mesh",
+    "difficulty": "hard",
+    "question": "A platform team has dozens of microservices and wants consistent mTLS, retries, traffic-splitting for canaries, and rich telemetry — without each team baking that logic into application code. They deploy a service mesh. Which statement best captures what a service mesh is and how it works?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Two services each have a sidecar proxy in their data plane; the proxies handle service-to-service traffic with mTLS and retries, while a control plane configures the proxies with policy and collects telemetry.",
+      "source": "graph TD\n  CP[Control Plane] -->|config and policy| P1[Proxy A]\n  CP -->|config and policy| P2[Proxy B]\n  A[Service A] --- P1\n  B[Service B] --- P2\n  P1 -->|mTLS traffic| P2"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "A dedicated infrastructure layer of per-service proxies (the data plane) that mediate service-to-service traffic, configured centrally by a control plane, moving mTLS, retries, traffic-shaping, and telemetry out of application code."
+      },
+      {
+        "id": "b",
+        "text": "A single API gateway at the system edge that authenticates and routes all north-south client traffic to backend services."
+      },
+      {
+        "id": "c",
+        "text": "A shared message broker that all services publish to and subscribe from, decoupling them via asynchronous events."
+      },
+      {
+        "id": "d",
+        "text": "A centralized library distributed to every team that they compile into their service to standardize retries and tracing."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A service mesh consists of a data plane of sidecar proxies deployed next to each service instance that intercept and manage east-west (service-to-service) traffic, plus a control plane that configures those proxies and aggregates telemetry. This relocates mTLS, retries, timeouts, traffic-splitting, and observability into the infrastructure, keeping them out of and consistent across application code.",
+      "b": "An API gateway handles north-south (client-to-system) edge traffic at a single entry point. A mesh manages east-west traffic between many internal services via distributed per-service proxies. They're complementary but distinct; the scenario is about inter-service concerns, which is the mesh's domain.",
+      "c": "A message broker enables asynchronous, decoupled communication. A service mesh transparently governs (typically synchronous) service-to-service calls without changing the communication style or requiring app changes. The mesh isn't a broker and doesn't make services event-driven.",
+      "d": "A shared library still lives in application code, must be compiled into each service, and is language-specific and version-skew-prone — the very coupling a mesh avoids by pushing the logic into out-of-process proxies configured centrally."
+    }
+  },
+  {
+    "id": "aa-ambassador-001",
+    "domain": "architecture-archetypes",
+    "topic": "ambassador",
+    "difficulty": "medium",
+    "question": "A legacy application makes direct outbound calls to a remote service but has no built-in retries, circuit breaking, or TLS, and the team can't easily modify its code. They introduce an ambassador. How does the ambassador pattern address this?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "The legacy app sends its outbound call to a local ambassador proxy over localhost; the ambassador adds retries, circuit breaking, and TLS, then forwards the request to the remote service.",
+      "source": "graph LR\n  L[Legacy app] -->|localhost| A[Ambassador proxy]\n  A -->|retries, breaker, TLS| R[Remote service]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "A local proxy, co-deployed with the app, that the app's outbound calls go through; the proxy transparently adds retries, circuit breaking, TLS, and routing on the client side without changing app code."
+      },
+      {
+        "id": "b",
+        "text": "A gateway placed in front of the app that intercepts inbound requests from clients and applies authentication and rate limiting before they reach the app."
+      },
+      {
+        "id": "c",
+        "text": "A central registry the app queries to discover the remote service's current address before each call."
+      },
+      {
+        "id": "d",
+        "text": "A message queue inserted between the app and the remote service so calls become asynchronous and durable."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The ambassador is a client-side sidecar proxy that handles outbound connectivity concerns on behalf of an application. The app calls the local ambassador (over localhost), and the ambassador adds resilience and connectivity features — retries, circuit breaking, TLS, routing — to the remote call without any change to the legacy code.",
+      "b": "That inverts the direction. The ambassador handles the app's outbound (client-side) calls to remote services. An inbound-facing component that authenticates and rate-limits incoming client traffic is the API gateway pattern, not the ambassador.",
+      "c": "Service discovery resolves a service name to an address; the ambassador may use discovery internally, but its defining contribution is proxying outbound calls and layering on resilience/connectivity features, not merely returning an address.",
+      "d": "An ambassador proxies synchronous outbound calls and improves their reliability; it doesn't convert the interaction into asynchronous messaging. Inserting a queue changes the communication model, which is a different pattern with different semantics."
+    }
+  },
+  {
+    "id": "aa-health-readiness-checks-001",
+    "domain": "architecture-archetypes",
+    "topic": "health-readiness-checks",
+    "difficulty": "hard",
+    "question": "In Kubernetes, a pod exposes both a liveness probe and a readiness probe. During a long startup, the app process is running but still warming caches and not yet able to serve traffic. What is the correct distinction in how the orchestrator should treat a FAILING liveness probe versus a FAILING readiness probe?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A failing liveness probe causes the orchestrator to restart the container; a failing readiness probe causes it to remove the pod from the load-balancer endpoints (stop sending traffic) without restarting it."
+      },
+      {
+        "id": "b",
+        "text": "A failing liveness probe stops routing traffic to the pod but keeps it running; a failing readiness probe restarts the container immediately."
+      },
+      {
+        "id": "c",
+        "text": "Both probes do the same thing — restart the container — and exist only for redundancy in case one probe handler crashes."
+      },
+      {
+        "id": "d",
+        "text": "A failing readiness probe deletes the pod permanently and triggers a new deployment, while a failing liveness probe is purely informational and logged but never acted upon."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Liveness answers 'is this process broken and unrecoverable?' — a failure triggers a container restart. Readiness answers 'can this instance serve requests right now?' — a failure pulls the pod out of the Service's endpoints so no traffic is routed to it, but the container keeps running. During cache warm-up you want readiness failing (no traffic yet) while liveness passes (don't kill it).",
+      "b": "This swaps the two probes. Restarting on liveness failure and de-routing on readiness failure is the correct mapping; doing the opposite would restart a healthy-but-warming pod and keep sending traffic to a deadlocked one — the exact failure modes the two probes are designed to prevent.",
+      "c": "The probes serve different purposes and have different consequences (restart vs. traffic removal); they are not redundant. Conflating them means a slow-starting but healthy pod gets killed instead of simply being held out of rotation until ready.",
+      "d": "Readiness failure does not delete the pod or trigger a deployment — it only removes the pod from Service endpoints and is reversible the moment the probe passes again. And liveness failure is very much acted upon: it restarts the container, it is not merely informational."
+    }
+  },
+  {
+    "id": "aa-retry-jitter-001",
+    "domain": "architecture-archetypes",
+    "topic": "retry-jitter",
+    "difficulty": "hard",
+    "question": "Many clients call a downstream service that briefly fails. They all retry using the SAME exponential backoff schedule (1s, 2s, 4s...). Even though backoff grows, the service keeps getting hammered in synchronized waves and struggles to recover. What is the standard fix, and why does it work?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Add randomized jitter to the backoff delays so retries spread out over time instead of synchronizing into thundering-herd waves."
+      },
+      {
+        "id": "b",
+        "text": "Remove the backoff entirely and retry immediately, since faster retries clear the backlog sooner."
+      },
+      {
+        "id": "c",
+        "text": "Increase the fixed backoff base to a much larger constant (e.g., 30s) for all clients so the waves are simply spaced further apart."
+      },
+      {
+        "id": "d",
+        "text": "Set the maximum retry count to infinity so every request eventually succeeds once the service recovers."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Identical deterministic backoff makes all clients retry at the same instants, producing synchronized 'thundering herd' spikes that repeatedly knock the recovering service down. Adding jitter (randomizing each delay, e.g., full/equal jitter) de-correlates the clients so retries arrive spread across the interval, smoothing load and letting the service recover.",
+      "b": "Retrying immediately with no backoff maximizes load at the worst moment and is the classic way to turn a brief blip into a sustained outage (a retry storm). The problem is synchronization and volume, both of which immediate retries make worse, not better.",
+      "c": "A larger fixed base still leaves every client synchronized — they all just spike together 30 seconds later. Without randomization the waves persist; spacing them further apart doesn't break the correlation that causes the herd. Jitter, not a bigger constant, is the fix.",
+      "d": "Unbounded retries remove the safety valve and amplify load during the outage, risking a self-sustaining retry storm. Retries should be capped (and excess work shed or dead-lettered). Infinite retries address neither the synchronization nor the overload."
+    }
+  },
+  {
+    "id": "aa-saga-orchestration-coupling-001",
+    "domain": "architecture-archetypes",
+    "topic": "saga-orchestration-coupling",
+    "difficulty": "medium",
+    "question": "A team is converting a choreographed saga (services react to each other's events) into an orchestrated saga. What is the primary trade-off they are accepting by introducing a central orchestrator?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "They gain centralized visibility and explicit control of the workflow, at the cost of a new component that all participating services now depend on."
+      },
+      {
+        "id": "b",
+        "text": "They eliminate the need for compensating transactions because the orchestrator can roll back a distributed ACID transaction."
+      },
+      {
+        "id": "c",
+        "text": "They make the saga strongly consistent, so intermediate states are never observable by other services."
+      },
+      {
+        "id": "d",
+        "text": "They remove all coupling between services because the orchestrator communicates only via fire-and-forget events."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Orchestration centralizes the workflow logic in one place, making the end-to-end flow explicit and easy to monitor and modify. The cost is that the orchestrator becomes a focal point of coupling and a potential bottleneck/single point of failure that participants depend on, whereas choreography spreads that logic across services.",
+      "b": "Wrong. A saga is still a sequence of local transactions linked by compensations; an orchestrator coordinates them but cannot wrap them in a single distributed ACID transaction with automatic rollback. Compensating actions are still required.",
+      "c": "Wrong. Sagas remain eventually consistent regardless of orchestration. Intermediate states (e.g., order created but payment pending) are still observable; orchestration does not provide isolation.",
+      "d": "Wrong. Orchestration typically increases coupling to the orchestrator and often uses command/reply (request-driven) interactions, not purely fire-and-forget events. Choreography is the style that avoids a central coordinator."
+    }
+  },
+  {
+    "id": "aa-eventual-consistency-read-your-writes-001",
+    "domain": "architecture-archetypes",
+    "topic": "eventual-consistency-read-your-writes",
+    "difficulty": "medium",
+    "question": "After a user edits their profile, the write goes to a primary store and a denormalized read model is updated asynchronously. The user immediately reloads the page and sees their OLD profile. Which fix best preserves a good UX without abandoning the async read model?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "For the editing user's own immediate reads, serve from the write store (or a session/local cache of the just-written value) so they get read-your-writes consistency."
+      },
+      {
+        "id": "b",
+        "text": "Switch the read model to synchronous updates inside the same transaction, accepting that all writes now block on projection latency."
+      },
+      {
+        "id": "c",
+        "text": "Add a global lock so no one can read the profile until the projection catches up."
+      },
+      {
+        "id": "d",
+        "text": "Tell the client to poll the read model every few seconds until the value changes, with no other change."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Read-your-writes is the targeted guarantee: route the author's own subsequent reads to the authoritative write store, or echo the value the client just submitted (optimistic UI / session-pinned read). This hides replication lag for the one user who would notice it, while everyone else keeps using the scalable async read model.",
+      "b": "Wrong. Making the projection synchronous defeats the purpose of CQRS/async read models, couples write latency to projection cost, and reduces availability — a heavy fix for a problem localized to the author's own session.",
+      "c": "Wrong. A global lock kills the scalability and availability benefits and harms all readers to solve one user's stale-read perception; eventual consistency is not avoided, just made slow.",
+      "d": "Wrong. Polling is a band-aid: the user still sees stale data in the meantime, it adds load, and it provides no guarantee of when they will see their own write. It does not deliver read-your-writes."
+    }
+  },
+  {
+    "id": "aa-read-model-projection-rebuild-001",
+    "domain": "architecture-archetypes",
+    "topic": "read-model-projection-rebuild",
+    "difficulty": "medium",
+    "question": "In an event-sourced system, a bug in a read-model projection caused a denormalized 'order summary' table to compute wrong totals for the past month. What property of event sourcing makes recovery straightforward?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Because the event log is the source of truth, you can fix the projector and rebuild the read model by replaying events from scratch into a corrected table."
+      },
+      {
+        "id": "b",
+        "text": "Read models are the source of truth, so you patch the summary table directly and the event log is regenerated from it."
+      },
+      {
+        "id": "c",
+        "text": "Event sourcing stores only the latest state, so you simply re-run yesterday's snapshot to repair the totals."
+      },
+      {
+        "id": "d",
+        "text": "The projection is transactional with the command, so fixing the command handler automatically corrects all historical rows."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. In event sourcing the append-only event log is the durable source of truth, and read models are disposable derivations. To recover, you correct the projection code and replay the events (optionally into a new table, then swap) to rebuild accurate state.",
+      "b": "Wrong. This inverts the model. The event log is the source of truth and is immutable/append-only; you cannot regenerate the log from a derived read model, and patching the projection by hand risks drifting further from the events.",
+      "c": "Wrong. Event sourcing stores the full history of events, not just the latest state. Snapshots are an optimization built from events; a stale or buggy snapshot would not repair a month of wrong totals on its own.",
+      "d": "Wrong. Coupling the projection transactionally to the command would not retroactively fix already-written historical rows, and many CQRS systems intentionally update read models asynchronously, outside the command's transaction."
+    }
+  },
+  {
+    "id": "aa-cqrs-write-validation-nuance-001",
+    "domain": "architecture-archetypes",
+    "topic": "cqrs-write-validation-nuance",
+    "difficulty": "hard",
+    "question": "In a CQRS system with an eventually-consistent read model, why is it risky to enforce a uniqueness invariant (e.g., 'email must be unique') by querying the read model before accepting a 'RegisterUser' command?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The read model may lag, so two concurrent registrations can both see 'email free' and both succeed; invariants must be enforced on the write side, not via the stale query side."
+      },
+      {
+        "id": "b",
+        "text": "Querying the read model is forbidden in CQRS, so any read during command handling is an architectural violation."
+      },
+      {
+        "id": "c",
+        "text": "The read model is always strongly consistent, so the real risk is that it is too slow to query under load."
+      },
+      {
+        "id": "d",
+        "text": "Uniqueness can only be guaranteed by making the command handler emit two events, one to each model."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The query side is eventually consistent and can be stale, so a check-then-act against it has a race window: two commands can both observe the email as available and both commit. Invariants that must hold must be enforced on the authoritative write side (e.g., a unique constraint or a uniqueness aggregate/reservation), not against the lagging read model.",
+      "b": "Wrong. CQRS does not forbid reads during command handling; the issue is specifically relying on a stale, eventually-consistent read model to enforce a hard invariant. Strongly-consistent write-side reads can be legitimate.",
+      "c": "Wrong. The read model in CQRS is generally NOT strongly consistent — it is updated asynchronously and can lag. Latency is a secondary concern; the core defect is staleness causing a race on the invariant.",
+      "d": "Wrong. Emitting more events does not by itself enforce uniqueness; you still need a single authoritative point (constraint or reservation on the write side) to serialize conflicting registrations."
+    }
+  },
+  {
+    "id": "aa-dual-write-problem-001",
+    "domain": "architecture-archetypes",
+    "topic": "dual-write-problem",
+    "difficulty": "medium",
+    "question": "A developer writes: save the order to the database, then publish an 'orderCreated' event to the broker, with no outbox or CDC. What is the fundamental flaw, known as the dual-write problem?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The two writes target different systems with no shared transaction, so a crash or failure between them can leave the DB updated but the event unpublished (or vice versa)."
+      },
+      {
+        "id": "b",
+        "text": "The two operations are too slow because they run sequentially instead of in parallel."
+      },
+      {
+        "id": "c",
+        "text": "The broker will reject the message because the order does not yet exist in its own storage."
+      },
+      {
+        "id": "d",
+        "text": "Publishing after saving guarantees ordering problems but never data-loss problems."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The dual-write problem is the lack of atomicity across two independent systems (database and broker). If the process crashes, or the publish fails after the commit succeeds, the two sources of truth diverge: the order exists but no one was notified — or, if reordered, an event fires for an order that was never persisted.",
+      "b": "Wrong. Performance/sequencing is not the issue; even if both were fast, the atomicity gap remains. The defect is correctness, not latency.",
+      "c": "Wrong. Brokers do not require the order to exist in the database; they accept the message regardless. The flaw is the absence of a shared transaction, not broker-side validation.",
+      "d": "Wrong. The dual-write problem absolutely can cause data/notification loss (the inconsistency), not merely ordering issues. Reordering the two writes only moves which side can be left orphaned."
+    }
+  },
+  {
+    "id": "aa-choreography-coupling-visibility-001",
+    "domain": "architecture-archetypes",
+    "topic": "choreography-coupling-visibility",
+    "difficulty": "hard",
+    "question": "A purely choreographed saga across six services is working but operations complain they cannot tell 'where an order is' in the flow. Which statement best captures the inherent limitation being hit?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Choreography distributes the workflow logic across services with no single owner, so end-to-end visibility and cyclic-dependency risk become harder to manage as the flow grows."
+      },
+      {
+        "id": "b",
+        "text": "Choreography is impossible to monitor at all because events are not persisted anywhere."
+      },
+      {
+        "id": "c",
+        "text": "Choreography requires a central orchestrator by definition, so the complaint means it was implemented incorrectly."
+      },
+      {
+        "id": "d",
+        "text": "Choreography guarantees strong consistency, so the only possible issue is database performance."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. In choreography each service reacts to events and emits its own, so the overall process is implicit and emergent rather than written down in one place. This buys loose coupling and autonomy but makes the end-to-end flow hard to see, reason about, and debug, and raises the risk of tangled/cyclic event dependencies as participants multiply.",
+      "b": "Wrong. The events can be logged, traced (e.g., correlation IDs/distributed tracing), and audited; visibility is harder but not impossible. The limitation is the lack of a single place that owns the flow, not absence of data.",
+      "c": "Wrong. Choreography by definition has NO central orchestrator — that is orchestration. The complaint reflects a known trade-off of choreography, not a misimplementation.",
+      "d": "Wrong. Choreographed sagas are eventually consistent, not strongly consistent. The visibility problem is about workflow observability, not database performance."
+    }
+  },
+  {
+    "id": "aa-eventual-consistency-ui-pattern-001",
+    "domain": "architecture-archetypes",
+    "topic": "eventual-consistency-ui-pattern",
+    "difficulty": "medium",
+    "question": "A UI submits a command whose effect (a new comment) only appears in the read model after async projection. To make the app feel responsive despite this lag, the most common UX pattern is:",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Optimistic UI: render the comment locally immediately on command acceptance, then reconcile with the read model when the projection catches up."
+      },
+      {
+        "id": "b",
+        "text": "Block the UI with a spinner until the read model is provably up to date for all users globally."
+      },
+      {
+        "id": "c",
+        "text": "Make the command synchronous by writing directly into the read model and skipping the write model entirely."
+      },
+      {
+        "id": "d",
+        "text": "Disable the comment feature until the system can offer strong consistency."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Optimistic UI assumes the accepted command will succeed and immediately reflects it in the local view, hiding projection lag from the user. When the read model catches up, the client reconciles; if the command is later rejected, the UI rolls back. This is the standard way to deliver responsiveness on top of eventual consistency.",
+      "b": "Wrong. Blocking until the read model is globally up to date defeats the scalability of async projections and produces a sluggish experience — exactly what eventual-consistency UX patterns aim to avoid.",
+      "c": "Wrong. Writing directly into the read model bypasses the authoritative write model and its invariants, undermining the CQRS separation and risking inconsistency between the two sides.",
+      "d": "Wrong. Eventual consistency does not require disabling the feature; UX patterns like optimistic rendering and read-your-writes make it perfectly usable without strong consistency."
+    }
+  },
+  {
+    "id": "aa-read-model-denormalization-001",
+    "domain": "architecture-archetypes",
+    "topic": "read-model-denormalization",
+    "difficulty": "hard",
+    "question": "A CQRS read model is denormalized so a dashboard query hits one pre-joined table instead of joining five normalized tables at request time. What is the main cost of this design choice?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Data is duplicated and must be kept in sync by projections, so the read model is eventually consistent and updates cost extra write/maintenance work."
+      },
+      {
+        "id": "b",
+        "text": "Query latency increases because denormalized tables are always larger and slower to scan than normalized joins."
+      },
+      {
+        "id": "c",
+        "text": "The write model loses its ability to enforce invariants, since denormalization removes all constraints."
+      },
+      {
+        "id": "d",
+        "text": "Denormalized read models cannot be rebuilt and must be migrated manually whenever the schema changes."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Denormalization trades cheap reads for redundant data that the system must actively keep consistent. Projections must update the read model whenever source events occur, which adds write-path and maintenance cost and means the read side is eventually consistent with the write side — the classic read-optimized trade-off.",
+      "b": "Wrong. The whole point is that pre-joined, read-optimized tables make queries FASTER by avoiding expensive runtime joins; latency typically drops, not rises. Size alone does not make a targeted lookup slower than a five-table join.",
+      "c": "Wrong. Invariant enforcement lives on the write model, which is unaffected by how the read side is shaped. Denormalizing the query side does not strip the write side of its constraints.",
+      "d": "Wrong. Denormalized read models are usually easy to rebuild — you can drop and replay/regenerate them from the source of truth (events or the write store), which is a key advantage, not a limitation."
+    }
+  },
+  {
+    "id": "aa-lambda-vs-kappa-architecture-001",
+    "domain": "architecture-archetypes",
+    "topic": "lambda-vs-kappa-architecture",
+    "difficulty": "medium",
+    "question": "A team runs Lambda Architecture: a batch layer recomputes views from the full dataset nightly while a speed layer serves real-time approximations, and queries merge both. They want to move to Kappa Architecture. What is the defining structural change Kappa makes?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Eliminate the separate batch layer and treat the immutable log as the single source of truth, reprocessing history by replaying the stream through the same streaming code."
+      },
+      {
+        "id": "b",
+        "text": "Eliminate the speed layer so all queries are served exclusively from precomputed batch views, improving accuracy."
+      },
+      {
+        "id": "c",
+        "text": "Replace the append-only log with a mutable, in-place-updated database to avoid storing full history."
+      },
+      {
+        "id": "d",
+        "text": "Keep both layers but move the batch layer onto the same cluster as the speed layer to reduce hardware cost."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Kappa's core idea is one code path: a single stream-processing layer reads from a durable, replayable log. Reprocessing (e.g., after a logic change) is done by replaying the retained log through the same streaming job, removing the dual-codebase maintenance burden of Lambda's separate batch layer.",
+      "b": "Backwards. Kappa removes the batch layer, not the speed layer; the streaming layer becomes the only layer. Removing the real-time path would defeat the goal of low-latency serving.",
+      "c": "Wrong. Kappa depends on an immutable, append-only, replayable log (e.g., Kafka with long retention). A mutable in-place store would destroy the ability to reprocess history by replay, which is exactly how Kappa substitutes for batch recomputation.",
+      "d": "Co-locating Lambda's two layers is an ops tweak, not Kappa. Kappa's value is collapsing two code paths into one, eliminating the dual-implementation drift, not consolidating hardware while keeping both layers."
+    }
+  },
+  {
+    "id": "aa-event-driven-vs-request-driven-001",
+    "domain": "architecture-archetypes",
+    "topic": "event-driven-vs-request-driven",
+    "difficulty": "medium",
+    "question": "When converting a synchronous request-driven call (Order service calls Inventory service via REST and waits) into an event-driven flow (Order emits an OrderPlaced event consumed asynchronously by Inventory), which consequence is intrinsic to that change?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The producer no longer learns the outcome within the original call, so downstream failures must be handled out-of-band and the overall flow becomes eventually consistent."
+      },
+      {
+        "id": "b",
+        "text": "The two services become temporally and behaviorally coupled, since the producer now blocks until every consumer acknowledges."
+      },
+      {
+        "id": "c",
+        "text": "Strong, immediate consistency between Order and Inventory is guaranteed because the broker commits both writes in one distributed transaction."
+      },
+      {
+        "id": "d",
+        "text": "The producer must know the network address and API contract of each consumer in advance, increasing point-to-point coupling."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Fire-and-forget eventing decouples producer from consumer in time, but the producer no longer gets a synchronous success/failure. Errors surface later and are handled via retries, DLQs, or compensation, and the system is eventually consistent rather than immediately consistent.",
+      "b": "Inverted. Event-driven design reduces temporal coupling: the producer does not block waiting for consumers. Blocking-until-ack describes the synchronous request-driven model it is replacing.",
+      "c": "A broker does not enroll the producer's DB write and the consumer's DB write in one distributed ACID transaction. Cross-service atomicity is precisely what you lose; you get eventual consistency and patterns like the outbox to bridge the gap.",
+      "d": "This describes request-driven point-to-point coupling. Publishing to a topic/broker means the producer does not need to know consumer addresses or contracts, which is one of the decoupling benefits gained, not lost."
+    }
+  },
+  {
+    "id": "aa-cell-based-architecture-001",
+    "domain": "architecture-archetypes",
+    "topic": "cell-based-architecture",
+    "difficulty": "hard",
+    "question": "A SaaS platform adopts cell-based architecture: independent, self-contained 'cells' (each a full stack serving a subset of users) sit behind a thin cell router. What is the primary resilience property this is designed to provide?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A cell router directing different user groups to isolated cells, each containing its own application and data stores.",
+      "source": "graph LR\n  R[Cell Router] --> C1[Cell 1 app and data]\n  R --> C2[Cell 2 app and data]\n  R --> C3[Cell 3 app and data]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "Blast-radius containment: a failure or bad deploy is bounded to the cell where it occurs, so it cannot cascade across the entire user base."
+      },
+      {
+        "id": "b",
+        "text": "Stronger global consistency, because all cells share one primary database that the router keeps synchronized."
+      },
+      {
+        "id": "c",
+        "text": "Lower total infrastructure cost, since cells let many tenants share a single pooled application instance."
+      },
+      {
+        "id": "d",
+        "text": "Elimination of the need for load balancing, because the router statically pins every request to one fixed cell forever."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The defining benefit of cells is fault isolation: each cell is independent (own compute and data), so an outage, poison input, or bad rollout is contained to that cell's user subset. Deploys can also be rolled cell-by-cell to limit risk.",
+      "b": "Wrong. Cells deliberately do NOT share one primary database; each is self-contained. A shared global DB would reintroduce a single point of failure and defeat blast-radius isolation.",
+      "c": "Cells trade some efficiency (duplicated stacks per cell) for isolation; pooling many tenants into one shared instance is the opposite resource-sharing model. Cost reduction is not the goal.",
+      "d": "The router does map users to cells, but cells still need internal load balancing, and mappings can be rebalanced (e.g., to drain or migrate a cell). 'Static forever' is not a requirement and misstates the model."
+    }
+  },
+  {
+    "id": "aa-multi-tenancy-001",
+    "domain": "architecture-archetypes",
+    "topic": "multi-tenancy",
+    "difficulty": "medium",
+    "question": "A B2B SaaS must choose a multi-tenancy data model. Which characterization of the 'database-per-tenant' (silo) model versus a 'shared schema with tenant_id column' (pool) model is correct?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Database-per-tenant maximizes isolation and simplifies per-tenant backup/restore and noisy-neighbor control, but scales worse in cost/operational overhead as tenant count grows."
+      },
+      {
+        "id": "b",
+        "text": "Shared-schema with tenant_id gives the strongest isolation because each query physically separates tenant data into different files."
+      },
+      {
+        "id": "c",
+        "text": "Database-per-tenant removes the need to ever filter by tenant in application code and is therefore always the cheapest option at scale."
+      },
+      {
+        "id": "d",
+        "text": "Shared-schema is impossible to operate safely because a missing WHERE tenant_id clause can never be mitigated by any technical control."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Silo (DB-per-tenant) gives strong isolation, easy per-tenant restore, and natural blast-radius/noisy-neighbor limits, at the cost of managing many databases, which becomes expensive and operationally heavy at thousands of tenants. Pool (shared schema) inverts these trade-offs.",
+      "b": "Wrong. Shared-schema co-mingles tenants in the same tables; isolation is logical (enforced by tenant_id filtering / row-level security), not physical file separation. It is the weaker-isolation model.",
+      "c": "Partly true that you avoid tenant filtering, but it is NOT cheapest at scale; the per-database operational and licensing overhead grows linearly and typically makes silo more expensive than pool for large tenant counts.",
+      "d": "Overstated. Shared-schema risk from a forgotten filter is real but mitigable, e.g., Postgres row-level security, query builders that always inject tenant_id, or middleware. Saying no control can help is incorrect."
+    }
+  },
+  {
+    "id": "aa-blue-green-deployment-001",
+    "domain": "architecture-archetypes",
+    "topic": "blue-green-deployment",
+    "difficulty": "medium",
+    "question": "In a blue-green deployment, the new version (green) is brought up alongside the live version (blue), and traffic is switched over via the router/load balancer. Compared with a canary release, what distinguishes blue-green?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Blue-green flips effectively all traffic from old to new at the cutover point and enables fast rollback by switching back, whereas canary shifts a small percentage first and ramps gradually."
+      },
+      {
+        "id": "b",
+        "text": "Blue-green exposes the new version to a small percentage of users first and increases it slowly, whereas canary swaps everyone at once."
+      },
+      {
+        "id": "c",
+        "text": "Blue-green guarantees zero database schema concerns because the two environments never share any state."
+      },
+      {
+        "id": "d",
+        "text": "Blue-green requires no second environment, since the new version is deployed in place over the old one."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Blue-green keeps two full environments and cuts traffic over at once (all-or-nothing flip), with rollback = switch back to blue. Canary instead routes a small slice to the new version and ramps up while watching metrics. That gradual-vs-atomic distinction is the key difference.",
+      "b": "Reversed. The 'small percentage first, ramp slowly' description is canary; the 'swap everyone at once' is blue-green. The choice swaps the two definitions.",
+      "c": "Wrong. Blue and green typically share the same production database, so backward/forward-compatible schema changes (expand-contract migrations) are a real and central concern in blue-green, not eliminated.",
+      "d": "That describes an in-place/recreate deploy. Blue-green's whole premise is two parallel environments so you can cut over and roll back by switching the router."
+    }
+  },
+  {
+    "id": "aa-canary-release-001",
+    "domain": "architecture-archetypes",
+    "topic": "canary-release",
+    "difficulty": "medium",
+    "question": "A team enables a canary release: 2% of production traffic goes to the new version while automated checks compare its metrics against the stable baseline. What is the central purpose of doing this with live traffic rather than relying only on pre-prod testing?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "To limit the blast radius while validating the new version against real production conditions, so problems are detected on a small slice before a full rollout."
+      },
+      {
+        "id": "b",
+        "text": "To permanently split load across two versions, since running old and new code side by side is the steady-state goal of canarying."
+      },
+      {
+        "id": "c",
+        "text": "To prove the new version is correct, since exposing it to a sample of real users exercises every code path."
+      },
+      {
+        "id": "d",
+        "text": "To replace the need for staging environments, because production traffic alone fully substitutes for pre-release testing."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Canary's value is risk reduction under realistic load and data: a tiny fraction of users is exposed, metrics (errors, latency, business KPIs) are compared to baseline, and you promote or roll back based on evidence, containing the blast radius if the release is bad.",
+      "b": "Wrong. Canary is a temporary, asymmetric split for validation, not a permanent load-balancing strategy across divergent code. The new version is meant to fully replace the old once validated.",
+      "c": "Overclaim. A 2% canary reduces risk but proves nothing about absolute correctness; rare paths may never be hit by a small live sample. It surfaces problems early, it does not guarantee bug-freedom.",
+      "d": "Wrong. Canary complements pre-prod testing rather than replacing it; you still need staging and automated tests, plus observability to compare canary metrics against the baseline and decide promote-vs-rollback."
+    }
+  },
+  {
+    "id": "aa-branch-by-abstraction-001",
+    "domain": "architecture-archetypes",
+    "topic": "branch-by-abstraction",
+    "difficulty": "hard",
+    "question": "A team must replace a legacy persistence library used throughout the codebase, but wants to keep shipping to trunk daily without a long-lived feature branch. They apply branch-by-abstraction. What is the correct sequence of the technique?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Introduce an abstraction layer over the old implementation, migrate callers to the abstraction, build the new implementation behind it, switch the abstraction to the new implementation, then remove the old one."
+      },
+      {
+        "id": "b",
+        "text": "Cut a long-lived branch, rewrite the persistence layer fully there, and merge once it is completely done."
+      },
+      {
+        "id": "c",
+        "text": "Delete the old implementation first, leave callers broken, then race to write the new one before the next release."
+      },
+      {
+        "id": "d",
+        "text": "Duplicate the entire application into a parallel deployment and route half of users to the new persistence code via DNS."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Branch-by-abstraction works in trunk: (1) insert an abstraction over the existing code, (2) point all clients at it, (3) implement the replacement behind the same abstraction, (4) flip clients/abstraction to the new implementation incrementally, (5) delete the old code and optionally the abstraction. This keeps the system shippable throughout.",
+      "b": "That is exactly the long-lived-branch approach branch-by-abstraction is meant to avoid; it reintroduces painful big-bang merges and integration drift.",
+      "c": "Wrong and unsafe. The technique never leaves the build broken; the abstraction keeps the old implementation working until the new one is ready and switched in. Deleting first defeats the purpose.",
+      "d": "That describes blue-green or parallel-run deployment routing, a runtime traffic-splitting concern. Branch-by-abstraction is a source-level refactoring strategy, not a deployment/routing strategy."
+    }
+  },
+  {
+    "id": "aa-twelve-factor-config-001",
+    "domain": "architecture-archetypes",
+    "topic": "twelve-factor-config",
+    "difficulty": "medium",
+    "question": "The Twelve-Factor App methodology's Config factor (III) states that config which varies between deploys must be stored in the environment. Which practice does this factor specifically prohibit?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hardcoding per-deploy values (like database credentials or API keys) as constants committed in the source code or in language-specific config files baked into the build."
+      },
+      {
+        "id": "b",
+        "text": "Reading the database URL from an environment variable at startup."
+      },
+      {
+        "id": "c",
+        "text": "Running multiple deploys (staging, prod) from the same build artifact with different env values."
+      },
+      {
+        "id": "d",
+        "text": "Treating backing services such as the database as attached resources referenced by a URL in config."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Factor III's litmus test: could you open-source the repo without leaking secrets? Config that varies per deploy (credentials, hostnames, keys) must live in the environment, not as constants in code or in checked-in, per-environment config files. That is precisely what it prohibits.",
+      "b": "Allowed and encouraged. Reading config from environment variables at runtime is the prescribed way to satisfy Factor III, not a violation.",
+      "c": "This is the desired outcome of separating config from code: one immutable build promoted across deploys, parameterized by env. It is compliant, not prohibited.",
+      "d": "That is Factor IV (Backing Services), and it is a recommended practice. Referencing a DB by a config URL aligns with twelve-factor; it is not what Factor III forbids."
+    }
+  },
+  {
+    "id": "aa-serverless-faas-tradeoffs-001",
+    "domain": "architecture-archetypes",
+    "topic": "serverless-faas-tradeoffs",
+    "difficulty": "hard",
+    "question": "A latency-sensitive API is moved to a FaaS platform (e.g., AWS Lambda) where each function instance is stateless and ephemeral. Which tradeoff is genuinely inherent to this FaaS model?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cold starts: an idle/scaled-to-zero function must spin up a fresh instance on a new request, adding initialization latency, and you cannot rely on in-process state persisting between invocations."
+      },
+      {
+        "id": "b",
+        "text": "Functions can hold long-lived in-memory caches and open connection pools that are guaranteed to persist for the application's lifetime."
+      },
+      {
+        "id": "c",
+        "text": "FaaS removes all concurrency limits, so a single function scales to unbounded parallelism with no downstream impact."
+      },
+      {
+        "id": "d",
+        "text": "Because billing is per-request, FaaS is always cheaper than a provisioned server regardless of sustained traffic volume."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. FaaS instances are ephemeral and can scale to zero, so requests hitting a cold instance pay initialization latency (runtime + dependencies + your init). And because instances are short-lived and not under your control, you cannot treat in-process memory as durable state, you must externalize it.",
+      "b": "Wrong. Instances are reused opportunistically but not guaranteed; warm-instance caches/pools can vanish at any time when instances are recycled. You cannot rely on lifetime persistence; this is the warm-state pitfall.",
+      "c": "Overstated. Platforms impose concurrency limits, and high fan-out can overwhelm downstream databases (connection storms). Scaling is high but neither unbounded nor free of downstream consequences.",
+      "d": "Not always. Per-request billing favors spiky/low-duty-cycle workloads; for sustained high traffic a provisioned instance is often cheaper. Cost depends on the traffic profile."
+    }
+  }
+]

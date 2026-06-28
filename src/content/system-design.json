@@ -1,0 +1,1990 @@
+[
+  {
+    "id": "sd-caching-001",
+    "domain": "system-design",
+    "topic": "caching",
+    "difficulty": "easy",
+    "question": "What problem does a write-through cache primarily solve?",
+    "choices": [
+      { "id": "a", "text": "It reduces read latency by serving cached reads." },
+      { "id": "b", "text": "It keeps the cache and the datastore consistent on every write." },
+      { "id": "c", "text": "It shards data across multiple nodes." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Tempting, but that's the read-side benefit of caching in general, not what write-through specifically addresses.",
+      "b": "Correct — a write-through cache writes to the cache and the datastore together, so they stay consistent.",
+      "c": "Sharding is a partitioning strategy, unrelated to cache write policies."
+    }
+  },
+  {
+    "id": "sd-caching-002",
+    "domain": "system-design",
+    "topic": "caching",
+    "difficulty": "medium",
+    "question": "A cache-aside (lazy loading) strategy has which characteristic downside?",
+    "choices": [
+      { "id": "a", "text": "Every write must also write to the cache, doubling write load." },
+      { "id": "b", "text": "The first request for an item always misses, paying the full datastore latency." },
+      { "id": "c", "text": "It cannot be used with a TTL-based eviction policy." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That describes write-through, not cache-aside. Cache-aside only populates the cache on a read miss.",
+      "b": "Correct — with cache-aside the application loads on a miss, so a cold entry pays the datastore round-trip the first time.",
+      "c": "TTLs work fine with cache-aside; they're independent concerns."
+    }
+  },
+  {
+    "id": "sd-cap-001",
+    "domain": "system-design",
+    "topic": "cap-theorem",
+    "difficulty": "medium",
+    "question": "Under the CAP theorem, when a network partition occurs, what must a distributed system choose between?",
+    "choices": [
+      { "id": "a", "text": "Consistency and Availability." },
+      { "id": "b", "text": "Latency and Throughput." },
+      { "id": "c", "text": "Durability and Partition tolerance." }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — during a partition you can keep serving (availability) or refuse to serve stale/divergent data (consistency), but not both.",
+      "b": "Latency vs throughput is a real tradeoff, but it isn't what CAP describes.",
+      "c": "Partition tolerance is the 'P' you must assume in a distributed system, not something traded against durability here."
+    }
+  },
+  {
+    "id": "sd-lb-001",
+    "domain": "system-design",
+    "topic": "load-balancing",
+    "difficulty": "easy",
+    "question": "Why might you prefer least-connections over round-robin load balancing?",
+    "choices": [
+      { "id": "a", "text": "It guarantees every server gets exactly the same number of requests." },
+      { "id": "b", "text": "It accounts for requests that take varying amounts of time to process." },
+      { "id": "c", "text": "It removes the need for health checks." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That's closer to round-robin's intent, and even it can't guarantee equal load when requests differ in cost.",
+      "b": "Correct — least-connections sends new work to the server with the fewest in-flight requests, which adapts when request durations vary.",
+      "c": "Health checks are still needed regardless of the balancing algorithm."
+    }
+  },
+  {
+    "id": "sd-sharding-001",
+    "domain": "system-design",
+    "topic": "sharding",
+    "difficulty": "medium",
+    "question": "What is a primary risk of sharding by a low-cardinality key (e.g. country)?",
+    "choices": [
+      { "id": "a", "text": "It makes cross-shard joins impossible." },
+      { "id": "b", "text": "It can create hotspots where one shard holds far more load than others." },
+      { "id": "c", "text": "It prevents the use of any secondary index." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Cross-shard joins get harder with any sharding scheme, not specifically low-cardinality keys.",
+      "b": "Correct — few distinct values means data and traffic clump onto a few shards, producing uneven 'hot' shards.",
+      "c": "Secondary indexes are still possible; the issue is load distribution."
+    }
+  },
+  {
+    "id": "sd-replication-001",
+    "domain": "system-design",
+    "topic": "replication",
+    "difficulty": "medium",
+    "question": "In asynchronous primary-replica replication, what is the key tradeoff accepted?",
+    "choices": [
+      { "id": "a", "text": "Writes block until all replicas acknowledge, increasing write latency." },
+      { "id": "b", "text": "Replicas may serve slightly stale data, and recent writes can be lost on primary failure." },
+      { "id": "c", "text": "Reads can only ever go to the primary." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That describes synchronous replication, which trades latency for stronger guarantees.",
+      "b": "Correct — async replication lets the primary ack before replicas catch up, so replicas lag and unreplicated writes are at risk if the primary dies.",
+      "c": "The whole point of replicas is often to offload reads from the primary."
+    }
+  },
+  {
+    "id": "sd-mq-001",
+    "domain": "system-design",
+    "topic": "message-queues",
+    "difficulty": "easy",
+    "question": "What does introducing a message queue between a producer and consumer primarily provide?",
+    "choices": [
+      { "id": "a", "text": "Stronger consistency between the two services." },
+      { "id": "b", "text": "Decoupling and buffering, so the consumer can process at its own pace." },
+      { "id": "c", "text": "Guaranteed exactly-once delivery with no extra effort." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Queues typically loosen coupling and embrace eventual, not stronger, consistency.",
+      "b": "Correct — the queue absorbs bursts and lets producer and consumer scale and fail independently.",
+      "c": "Most queues give at-least-once by default; exactly-once requires extra work (idempotency, dedup)."
+    }
+  },
+  {
+    "id": "sd-consistency-001",
+    "domain": "system-design",
+    "topic": "consistency-models",
+    "difficulty": "hard",
+    "question": "Which statement best describes 'read-your-writes' consistency?",
+    "choices": [
+      { "id": "a", "text": "All clients see every write in the same global order." },
+      { "id": "b", "text": "After a client writes a value, that same client will see its own write on subsequent reads." },
+      { "id": "c", "text": "Reads always return the value with the highest timestamp across the system." }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "That's closer to total order / linearizability, a stronger global guarantee.",
+      "b": "Correct — read-your-writes is a session guarantee: a client never fails to see its own prior writes, even if others lag.",
+      "c": "Last-write-wins by timestamp is a conflict-resolution rule, not the read-your-writes guarantee."
+    }
+  },
+  {
+    "id": "sd-idempotency-001",
+    "domain": "system-design",
+    "topic": "reliability",
+    "difficulty": "medium",
+    "question": "Why is idempotency important when a queue offers at-least-once delivery?",
+    "choices": [
+      { "id": "a", "text": "Because messages may be delivered more than once, processing must be safe to repeat." },
+      { "id": "b", "text": "Because messages are delivered in strict order, handlers must be sequential." },
+      { "id": "c", "text": "Because messages are encrypted, handlers must decrypt them twice." }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — at-least-once means duplicates happen, so an idempotent handler produces the same result whether a message arrives once or many times.",
+      "b": "At-least-once says nothing about ordering; that's a separate guarantee.",
+      "c": "Encryption is unrelated to delivery-count semantics."
+    }
+  },
+  {
+    "id": "sd-ratelimiting-001",
+    "domain": "system-design",
+    "topic": "rate-limiting",
+    "difficulty": "medium",
+    "question": "A team uses a fixed-window counter (e.g. max 100 requests per 60-second wall-clock window) to rate-limit an API. Compared with a token-bucket limiter of the same average rate, what is the characteristic weakness of the fixed-window approach?",
+    "choices": [
+      { "id": "a", "text": "It can allow up to roughly twice the limit within a single rolling 60-second window that straddles the boundary between two counter windows." },
+      { "id": "b", "text": "It cannot enforce any average rate, so clients can send unlimited traffic." },
+      { "id": "c", "text": "It requires storing every individual request timestamp, making it far more memory-intensive than a token bucket." }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — because the counter resets on a wall-clock boundary, a client can send 100 requests in the last seconds of one window and 100 more in the first seconds of the next. Any rolling 60-second window straddling that reset can therefore contain up to ~200 requests, roughly twice the intended limit. Token bucket does not eliminate bursts either, but its burst is bounded by the bucket capacity B rather than spiking at every wall-clock reset, which is why sliding-window or token-bucket schemes are often preferred.",
+      "b": "Wrong — a fixed window does enforce an average (100 per 60s); its flaw is burst behavior at window edges, not a total lack of limiting.",
+      "c": "That describes a sliding-window-log approach, which stores per-request timestamps. A fixed-window counter is actually memory-cheap (one counter per window), so this is backwards."
+    }
+  },
+  {
+    "id": "sd-caching-diagram-001",
+    "domain": "system-design",
+    "topic": "caching",
+    "difficulty": "medium",
+    "question": "The sequence diagram shows how the application handles a read for a key that is not in the cache. Which caching strategy does this depict?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "On a read, the application queries the cache, gets a miss, reads from the database, then writes the value back into the cache.",
+      "source": "sequenceDiagram\n    participant App as Application\n    participant Cache\n    participant DB as Database\n    App->>Cache: get(key)\n    Cache-->>App: miss\n    App->>DB: read(key)\n    DB-->>App: value\n    App->>Cache: set(key, value)"
+    },
+    "choices": [
+      { "id": "a", "text": "Cache-aside (lazy loading)" },
+      { "id": "b", "text": "Read-through" },
+      { "id": "c", "text": "Write-through" }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct — the application itself checks the cache, and on a miss it reads the database and then populates the cache. That application-managed flow is exactly cache-aside (lazy loading).",
+      "b": "Tempting, because read-through also fills the cache on a miss. The difference is who does it: in read-through the cache sits in front of the DB and loads the value transparently. Here the application explicitly reads the DB and writes back, so it is cache-aside, not read-through.",
+      "c": "Write-through is a write policy (writes go to cache and DB together). This diagram is a read path, so it cannot be write-through."
+    }
+  },
+  {
+    "id": "sd-consistent-hashing-001",
+    "domain": "system-design",
+    "topic": "consistent-hashing",
+    "difficulty": "medium",
+    "question": "A distributed cache shards K keys across N nodes. With naive hashing the node is chosen as node = hash(key) % N, and operators observe that adding a single node forces almost the entire keyspace to be re-fetched/moved. They switch to consistent hashing and now a node addition or removal moves only about K/N keys. What is the mechanism that makes consistent hashing cheap to rebalance?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A hash ring with nodes N1, N2, N3 placed around it; a key is assigned to the first node encountered clockwise, so adding a node only steals the arc immediately before it.",
+      "source": "graph LR\n  K[key k -> hash] --> R{{position on ring}}\n  R --> C[walk clockwise]\n  C --> N[first node found = owner]\n  N --> ADD[add node only steals one arc]\n  N --> REM[remove node passes its arc to successor]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "Consistent hashing distributes keys more evenly across nodes than modulo, so rebalancing after a change touches fewer keys."
+      },
+      {
+        "id": "b",
+        "text": "Both keys and nodes are hashed onto the same fixed ring, so each key belongs to the next node clockwise; adding/removing one node only reassigns the keys in that node's arc (~K/N), whereas modulo changes the divisor N and remaps almost every key."
+      },
+      {
+        "id": "c",
+        "text": "Consistent hashing keeps a central lookup table mapping each key to a node, so a node change only requires editing that node's table rows instead of recomputing every key."
+      },
+      {
+        "id": "d",
+        "text": "Consistent hashing replicates every key to all N nodes, so when a node leaves its keys are already present elsewhere and nothing has to move."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Tempting because consistent hashing is often discussed alongside even distribution (and virtual nodes do improve balance). But even distribution is not why a node change is cheap. Plain consistent hashing without virtual nodes can actually distribute keys unevenly, yet it still moves only ~K/N keys on a change. The cheapness comes from the ring topology localizing reassignment, not from balance.",
+      "b": "Correct. In consistent hashing, keys and nodes are mapped to the same circular hash space, and each key is owned by the first node clockwise from it. Because node positions are fixed independently of the count N, inserting or removing a node only affects the contiguous arc between that node and its predecessor, so only that node's share (on average K/N of K keys) is reassigned. Naive modulo (node = hash(key) % N) uses N as the divisor, so changing N to N+/-1 changes the result for almost every key, forcing a near-total remap.",
+      "c": "Plausible because some systems do keep routing tables, but this misdescribes consistent hashing. Its defining property is that a node's owner is computed from hash positions on the ring, not stored per-key in a central table. A per-key table would be O(K) in size and is exactly what consistent hashing avoids; the small key movement comes from the ring geometry, not from editing table rows.",
+      "d": "Confuses consistent hashing with full replication. Consistent hashing may replicate each key to a small number R of successor nodes for fault tolerance, but it does not place every key on all N nodes (that would defeat the point of sharding and waste storage). The ~K/N cheap-rebalancing property holds even with a single copy per key, purely from the ring assignment rule."
+    }
+  },
+  {
+    "id": "sd-cdn-001",
+    "domain": "system-design",
+    "topic": "cdn",
+    "difficulty": "easy",
+    "question": "What does a Content Delivery Network (CDN) fundamentally provide?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It permanently stores the origin's entire dataset at every edge location, so the origin server can be decommissioned."
+      },
+      {
+        "id": "b",
+        "text": "It caches copies of content at edge servers geographically close to users, cutting round-trip latency and offloading repeated requests from the origin."
+      },
+      {
+        "id": "c",
+        "text": "It speeds up the origin's dynamic computation (database queries, business logic) by running that code faster at the edge."
+      },
+      {
+        "id": "d",
+        "text": "It increases the raw bandwidth of the origin server's own network link so a single server can serve the whole world."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Tempting because CDNs do replicate content widely, but they cache a subset of content (typically popular or recently requested items) governed by TTLs and evictions; they are not a full durable replica of the origin, and the origin remains the source of truth that the edge fetches from on a cache miss.",
+      "b": "Correct. A CDN's core value is placing cached copies of content on edge servers near users, which shortens the network round trip (lower latency) and absorbs repeated requests so the origin sees far less load.",
+      "c": "A misconception: a plain CDN serves cached content; it does not accelerate the origin's dynamic compute. Running logic at the edge is a separate capability (edge compute/functions), not what a CDN fundamentally is.",
+      "d": "Wrong model of how a CDN helps. It does not upgrade the origin's link; it avoids using the origin at all for cached hits by serving from distributed edges, providing scale through many edge nodes rather than a fatter pipe to one server."
+    }
+  },
+  {
+    "id": "sd-quorum-001",
+    "domain": "system-design",
+    "topic": "quorum",
+    "difficulty": "medium",
+    "question": "A Dynamo-style leaderless store keeps N replicas of each key and lets operators tune R (replicas a read waits for) and W (replicas a write waits for). Setting R + W > N is said to guarantee that a read sees the latest acknowledged write. What is the actual mechanism that provides this guarantee, and what is the related tradeoff when tuning R and W?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "N=3 replicas; a write with W=2 acknowledges on two replicas and a read with R=2 contacts two replicas; because 2+2 > 3 the two sets must share at least one replica, which holds the latest write.",
+      "source": "graph LR\n  W[Write W=2 acks] --> R1[Replica 1 latest]\n  W --> R2[Replica 2 latest]\n  RD[Read R=2 contacts] --> R2\n  RD --> R3[Replica 3 stale]\n  R2 --> OV[Overlap: R2 has latest, read sees it]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "It forces every replica to hold an identical copy at all times, so any single node a read touches is guaranteed current regardless of which replicas the write reached."
+      },
+      {
+        "id": "b",
+        "text": "R + W > N forces the set of W replicas the write acknowledged and the set of R replicas the read contacts to share at least one replica; that overlapping node holds the latest write, so the read sees it (resolving by version/timestamp)."
+      },
+      {
+        "id": "c",
+        "text": "It elects a single leader replica that serializes all reads and writes, so reads are current because they always go through that one authoritative node."
+      },
+      {
+        "id": "d",
+        "text": "It guarantees the read returns the newest value by having the coordinator always wait for all N replicas to reply and pick the highest version among them."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Tempting because it sounds like 'strong consistency', but it misstates the mechanism. Quorum systems do NOT require every replica to be identical at all times; writes are accepted on only W of N replicas and the others may lag. The guarantee comes specifically from the read quorum overlapping the write quorum, not from universal up-to-date replication. A read that happens to hit only lagging replicas would see stale data if there were no overlap requirement.",
+      "b": "Correct. With N replicas, a write returns once W replicas acknowledge and a read collects responses from R replicas. If R + W > N, the two subsets cannot be disjoint (by pigeonhole), so at least one replica in the read set also received the latest write. The read therefore observes that write and uses version numbers / vector clocks / timestamps to pick the freshest value among the responses. The tradeoff: R and W govern read vs write latency and availability (small R = fast/available reads but forces large W, and vice versa), so operators tune them below N to balance these rather than maximize either. This is the intersection property behind Dynamo-style tunable quorums.",
+      "c": "This describes single-leader (primary-based) replication, not quorum consistency. Dynamo-style quorum stores are explicitly leaderless: any replica can coordinate, and there is no single node that serializes all operations. The R + W > N condition, not a leader, is what makes a read overlap the latest write.",
+      "d": "Wrong because it conflates 'correct' with 'wait for everyone' and names no real tradeoff. You do not need all N replicas to respond: R + W > N already guarantees overlap with the latest write using only R responses, which is the whole point. You tune R and W below N to trade latency and availability. Waiting for all N would maximize latency and fail whenever any single replica is down, defeating the flexibility quorums provide."
+    }
+  },
+  {
+    "id": "sd-caching-writeback-001",
+    "domain": "system-design",
+    "topic": "write-back-cache",
+    "difficulty": "medium",
+    "question": "A service configures its cache with a write-back (write-behind) policy: each write updates the cache and returns immediately, while a background flusher persists the dirtied entries to the datastore some time later. Compared with a write-through cache on the same workload, what is the defining trade-off this buys?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Lower write latency, since the write acknowledges as soon as the cache is updated, at the cost of durability: writes are lost if the cache fails before the dirty entries are flushed."
+      },
+      {
+        "id": "b",
+        "text": "Stronger durability than write-through, because buffering writes in the cache lets the system batch them into the datastore so none can ever be lost."
+      },
+      {
+        "id": "c",
+        "text": "Lower read latency, because write-back caches keep more recently read keys resident than write-through caches do."
+      },
+      {
+        "id": "d",
+        "text": "Guaranteed consistency between cache and datastore on every write, because the flush happens synchronously inside the write call."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Write-back acknowledges the write once the cache is updated and defers the datastore write to an asynchronous background flush, which cuts write latency and absorbs bursts. The price is durability: between the acknowledgement and the flush the only copy of the dirtied data lives in the volatile cache, so a cache crash (or eviction before flush) loses those writes. Write-through avoids that window by writing the datastore synchronously, trading higher write latency for no unflushed-data risk.",
+      "b": "Backwards. Batching can improve throughput, but it weakens durability rather than strengthening it: the un-flushed writes exist only in the volatile cache, so they are exactly the data at risk if the cache dies. Write-through, which persists synchronously, is the more durable policy here.",
+      "c": "This confuses a write policy with read behavior. Write-back and write-through differ in how writes propagate to the datastore, not in read latency or which keys stay resident; residency is governed by the eviction policy, which is independent of the write policy.",
+      "d": "That describes write-through, not write-back. In write-back the flush is deliberately asynchronous, so for a window the cache holds newer data than the datastore and the two are not consistent on every write; making the flush synchronous would just turn it back into write-through."
+    }
+  },
+  {
+    "id": "sd-database-index-001",
+    "domain": "system-design",
+    "topic": "database-index",
+    "difficulty": "medium",
+    "question": "A team adds a B-tree index on the `email` column of a large `users` table to speed up lookups by email. Which statement most accurately describes how the index helps reads and what it costs?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "A B-tree with a root node routing to intermediate nodes and then leaf nodes holding sorted keys, showing a lookup descending only a few levels instead of scanning every row.",
+      "source": "graph TD\n  R[\"Root: keys &lt;50 vs &gt;=50\"] --> A[\"Node: 10,20,30\"]\n  R --> B[\"Node: 70,80,90\"]\n  A --> L1[\"leaf 10,20\"]\n  A --> L2[\"leaf 30,40\"]\n  B --> L3[\"leaf 70,75\"]\n  B --> L4[\"leaf 85,90\"]\n  Q[\"Lookup key=30\"] -. descend about log n levels .-> L2"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "Reads get faster because the index keeps a fully cached copy of the table in RAM, so queries never touch disk."
+      },
+      {
+        "id": "b",
+        "text": "Reads get faster because the sorted B-tree lets the engine narrow the search by a large fraction at each node (O(log n) instead of an O(n) full scan), but every insert, update, or delete on the indexed column must also maintain the index, making writes slower and consuming extra storage."
+      },
+      {
+        "id": "c",
+        "text": "Reads get faster and there is essentially no cost: a B-tree index speeds up lookups while leaving write performance and storage unchanged, which is why you should index every column."
+      },
+      {
+        "id": "d",
+        "text": "Reads get faster because the index physically reorders the table rows on disk into sorted order, so any query can binary-search the table directly without a separate structure."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Wrong. A B-tree index does not guarantee an in-memory copy of the table, and it is not a cache of rows. Frequently-used index pages may be buffered, but the speedup comes from the logarithmic search over a sorted structure, not from holding the whole table in RAM. Index and/or table pages can still be read from disk. This is a tempting trap because caching also speeds up reads, but it is a different mechanism.",
+      "b": "Correct. A B-tree keeps keys sorted and balanced, so each step down the tree eliminates a large fraction of the remaining keys, giving O(log n) lookups for a selective predicate like an equality match on email, versus an O(n) full table scan. The cost is that the index is a separate structure that must be updated on every insert/update/delete touching the indexed column (often page splits/merges to stay balanced), which slows writes and uses additional disk space. This precisely captures both the benefit and the trade-off.",
+      "c": "Wrong, and it states the exact misconception this question targets. Indexes are not free: each one adds write amplification (every modifying statement must update it) and storage overhead. Indexing every column would degrade write throughput and bloat the database. You index selectively based on query patterns.",
+      "d": "Wrong. A secondary B-tree index is a separate, independent data structure that stores sorted keys plus pointers to the rows; it does not physically reorder the heap table. (A clustered index does influence physical row order, but that is a specific variant, not how a plain secondary B-tree index works, and the description of binary-searching the table directly without a separate structure is incorrect.) This is tempting because the index is indeed sorted, but the sorting lives in the index, not in the base table rows."
+    }
+  },
+  {
+    "id": "sd-bloom-filter-false-positive-001",
+    "domain": "system-design",
+    "topic": "bloom-filter-false-positive",
+    "difficulty": "medium",
+    "question": "A read-through cache fronts a large database. To avoid hitting the DB for keys that don't exist, engineers put a Bloom filter in front of the cache layer. What guarantee does the Bloom filter give, and what is the operational consequence?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It can produce false positives but never false negatives, so a \"not present\" answer is definitive while a \"present\" answer may still require a DB lookup."
+      },
+      {
+        "id": "b",
+        "text": "It can produce false negatives but never false positives, so a \"present\" answer is definitive while a \"not present\" answer may still require a DB lookup."
+      },
+      {
+        "id": "c",
+        "text": "It guarantees exact membership with no errors, so every \"not present\" answer safely skips the DB and every \"present\" answer skips it too."
+      },
+      {
+        "id": "d",
+        "text": "It guarantees exact membership only after all keys are deleted and reinserted, so it is unusable for live traffic."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A standard Bloom filter never returns a false negative: if it says a key is absent, the key is truly absent and the DB lookup can be skipped. It may return a false positive (says present when absent), so a 'present' result is only a hint and still needs verification against the cache/DB.",
+      "b": "Reversed. Bloom filters have false positives, not false negatives. Treating 'present' as definitive would skip real lookups and return wrong results.",
+      "c": "Wrong. A standard Bloom filter is probabilistic, not exact; false positives are inherent to its space-efficient bit-array-plus-hashes design. (A counting/cuckoo variant changes deletion, not the false-positive nature.)",
+      "d": "Wrong. Bloom filters work on live traffic continuously; the deletion limitation (you can't remove from a plain Bloom filter) doesn't make it unusable, and it never requires reinserting everything to function."
+    }
+  },
+  {
+    "id": "sd-lru-vs-lfu-eviction-001",
+    "domain": "system-design",
+    "topic": "lru-vs-lfu-eviction",
+    "difficulty": "medium",
+    "question": "A video-thumbnail cache shows a recurring pattern: a small set of evergreen thumbnails are accessed steadily forever, while large bursts of one-off thumbnails flood in during traffic spikes and are never seen again. Which eviction policy best protects the valuable working set, and why?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "LFU, because frequency tracking keeps the steadily-accessed evergreen items while the one-off burst items, having low frequency, are evicted first."
+      },
+      {
+        "id": "b",
+        "text": "LRU, because recency guarantees the evergreen items are always the most recently used and never evicted."
+      },
+      {
+        "id": "c",
+        "text": "FIFO, because evicting in insertion order naturally preserves frequently accessed items."
+      },
+      {
+        "id": "d",
+        "text": "LFU, but only because it is strictly cheaper to implement than LRU in all cases."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. LFU evicts items with the lowest access frequency. The one-off burst items have frequency near 1 and are discarded first, while evergreen items accumulate high counts and survive. This resists the scan/burst pollution that hurts LRU.",
+      "b": "Wrong. Under a flood of one-off items, LRU evicts the evergreen items because the recent burst keys become 'most recently used' and push the working set out — classic cache pollution / scan resistance failure.",
+      "c": "Wrong. FIFO ignores access frequency entirely; it evicts by insertion order and offers no protection for a frequently accessed working set.",
+      "d": "Wrong. LFU is generally more expensive (it must track and age frequency counts), not cheaper; and cost isn't the reason it fits this access pattern."
+    }
+  },
+  {
+    "id": "sd-cache-stampede-mitigation-001",
+    "domain": "system-design",
+    "topic": "cache-stampede-mitigation",
+    "difficulty": "hard",
+    "question": "A single extremely hot key expires. Within milliseconds thousands of concurrent requests miss the cache and all stampede the database to recompute the same value, overloading it. Which mitigation most directly prevents this thundering-herd recomputation, with the fewest correctness surprises?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Use a per-key lock (or single-flight) so only one request recomputes and repopulates the cache while the others wait for or briefly serve the stale value."
+      },
+      {
+        "id": "b",
+        "text": "Set the key's TTL to infinity so it never expires and the stampede can never occur."
+      },
+      {
+        "id": "c",
+        "text": "Switch the eviction policy from LRU to LFU so the hot key is never evicted."
+      },
+      {
+        "id": "d",
+        "text": "Shard the single key across many cache nodes using consistent hashing so each node absorbs part of the load."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Per-key locking / single-flight / request coalescing ensures exactly one caller recomputes the value on a miss; concurrent callers block or serve a slightly stale value until the cache is repopulated, collapsing N DB calls into 1.",
+      "b": "Wrong. Infinite TTL stops expiry but leaves no refresh path, so the value goes permanently stale; and an eviction or node restart still triggers a simultaneous miss and stampede.",
+      "c": "Wrong. LFU keeps the hot key resident against eviction but does nothing about TTL-driven expiry, which is the trigger here; the stampede still happens when the TTL lapses.",
+      "d": "Wrong. A single logical key still maps to one node/value under consistent hashing; sharding distributes different keys, not the load of one identical key, and adds consistency complexity without coalescing the recompute."
+    }
+  },
+  {
+    "id": "sd-probabilistic-early-expiration-001",
+    "domain": "system-design",
+    "topic": "probabilistic-early-expiration",
+    "difficulty": "hard",
+    "question": "To smooth out cache stampedes on hot keys, a team adopts probabilistic early expiration (the 'XFetch' technique): each reader computes a small random value and may refresh the key slightly before its hard TTL. What problem does this specifically solve that a fixed TTL does not?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It staggers refreshes so that one volunteer request recomputes the value before expiry instead of every request missing simultaneously at the exact expiry instant."
+      },
+      {
+        "id": "b",
+        "text": "It eliminates the need for any backing store by regenerating values purely from the random seed."
+      },
+      {
+        "id": "c",
+        "text": "It guarantees strong consistency between the cache and the database on every read."
+      },
+      {
+        "id": "d",
+        "text": "It increases the hit rate by making keys live longer than their TTL on average."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Probabilistic early expiration makes each reader independently decide, with rising probability as the TTL nears, to refresh early. Statistically one request refreshes ahead of the hard deadline, so the herd never all misses at the same instant — avoiding the synchronized stampede a fixed TTL causes.",
+      "b": "Wrong. The technique still recomputes from the real backing store; the randomness only governs *when* to refresh, not where the data comes from.",
+      "c": "Wrong. It does not provide strong consistency; the cache can still serve stale values between refreshes. It targets stampede avoidance, not consistency.",
+      "d": "Wrong. It tends to refresh slightly *early*, so keys effectively live no longer (often a touch shorter); the benefit is smoother load, not longer-lived keys or a higher raw hit rate."
+    }
+  },
+  {
+    "id": "sd-write-around-pattern-001",
+    "domain": "system-design",
+    "topic": "write-around-pattern",
+    "difficulty": "medium",
+    "question": "A system writes huge volumes of log-style records that are rarely read back soon after being written. The team chooses a write-around strategy. What does write-around do, and why does it fit this workload?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Writes go straight to the backing store and bypass the cache; the cache is only populated later on a read miss, avoiding polluting the cache with write-heavy data that is seldom read."
+      },
+      {
+        "id": "b",
+        "text": "Writes go to the cache first and are flushed to the store asynchronously, maximizing write throughput by deferring durability."
+      },
+      {
+        "id": "c",
+        "text": "Writes update both the cache and the store synchronously on every write so reads are always warm."
+      },
+      {
+        "id": "d",
+        "text": "Writes are discarded if the key is not already present in the cache, reducing storage costs for cold data."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Write-around sends writes directly to the backing store and skips the cache; entries are loaded into the cache only when later read (cache-aside on the read path). For write-heavy, rarely-re-read data this prevents the cache from filling with entries that would just be evicted unread.",
+      "b": "Wrong. That describes write-back (write-behind), which buffers writes in the cache and flushes asynchronously — a different pattern with durability trade-offs.",
+      "c": "Wrong. That describes write-through, which keeps cache and store synchronously consistent on every write — the opposite of bypassing the cache.",
+      "d": "Wrong. Write-around does not discard writes; all writes persist to the backing store. It only chooses not to populate the cache on the write."
+    }
+  },
+  {
+    "id": "sd-negative-caching-001",
+    "domain": "system-design",
+    "topic": "negative-caching",
+    "difficulty": "medium",
+    "question": "An auth service is hammered by requests for user IDs that don't exist (some malicious, some buggy clients). Each miss falls through to an expensive database lookup that returns 'not found'. What is negative caching, and what is the key tuning consideration?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Cache the 'not found' result itself for a deliberately short TTL, so repeated lookups for the missing key are absorbed by the cache without overloading the DB, while a short TTL limits staleness once the key is created."
+      },
+      {
+        "id": "b",
+        "text": "Cache only successful lookups and immediately retry failed ones, so missing keys are never stored."
+      },
+      {
+        "id": "c",
+        "text": "Invert the cache so that misses are stored permanently and hits are recomputed each time."
+      },
+      {
+        "id": "d",
+        "text": "Drop all requests for keys absent from a Bloom filter and never consult the database again for them."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Negative caching stores the absence result ('not found') so subsequent lookups for the same missing key hit the cache instead of the DB. The TTL must be short (or invalidated on create) because the entity may be created later — a long negative TTL would keep returning 'not found' after the key actually exists.",
+      "b": "Wrong. That is exactly the behavior negative caching avoids; immediately retrying every failure keeps hammering the DB and stores nothing for misses.",
+      "c": "Wrong. Negative caching adds caching of misses alongside hits; it does not invert the cache or stop caching successful results.",
+      "d": "Wrong. That's a Bloom-filter pre-check, a different mechanism; and 'never consult the DB again' ignores false positives and newly created keys. Negative caching specifically uses a TTL, not permanent suppression."
+    }
+  },
+  {
+    "id": "sd-hot-key-mitigation-001",
+    "domain": "system-design",
+    "topic": "hot-key-mitigation",
+    "difficulty": "hard",
+    "question": "In a distributed cache cluster using key-based sharding, a single celebrity key receives so much traffic that the one node owning it is saturated while other nodes sit idle. Which technique most directly relieves this hot-key hotspot?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Key splitting / replication: store N copies of the hot key under suffixed names (key#0..key#N-1) spread across nodes, and have clients read a random replica to fan out the load."
+      },
+      {
+        "id": "b",
+        "text": "Increase the hot key's TTL so it is recomputed less often, eliminating the per-node load imbalance."
+      },
+      {
+        "id": "c",
+        "text": "Switch the cluster's hash function so the hot key maps to a different single node with more CPU."
+      },
+      {
+        "id": "d",
+        "text": "Convert the cache from write-through to write-back so the hot key's writes are batched."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Replicating the hot key into N suffixed copies that land on different shards lets read traffic be spread across many nodes (client picks a random replica), removing the single-node bottleneck. The trade-off is N-way invalidation on update.",
+      "b": "Wrong. TTL affects recompute frequency, not the read load distribution; a longer TTL still routes every read of the key to the same single owning node, so the hotspot persists.",
+      "c": "Wrong. Rehashing just moves the entire hot key to another single node — the new node becomes the bottleneck. It doesn't distribute the load for one key.",
+      "d": "Wrong. Write-back addresses write durability/batching, not read-side hot-key saturation; the celebrity key is read-dominated and still served by one node."
+    }
+  },
+  {
+    "id": "sd-ttl-tuning-tradeoff-001",
+    "domain": "system-design",
+    "topic": "ttl-tuning-tradeoff",
+    "difficulty": "medium",
+    "question": "When tuning the TTL on a cache-aside layer, an engineer must balance two competing failure modes. Which statement correctly characterizes the core trade-off of a longer TTL?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A longer TTL raises the hit rate and lowers backing-store load, but increases the window during which the cache can serve stale data after the source changes."
+      },
+      {
+        "id": "b",
+        "text": "A longer TTL lowers the hit rate but guarantees the cache is always consistent with the source."
+      },
+      {
+        "id": "c",
+        "text": "A longer TTL has no effect on staleness because cache-aside always validates against the source on every read."
+      },
+      {
+        "id": "d",
+        "text": "A longer TTL eliminates cache stampedes because keys expire less frequently overall."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Longer TTLs mean entries live longer, so more reads are served from cache (higher hit rate, less origin load), but any change at the source is invisible until the entry expires or is explicitly invalidated — a larger staleness window. That is the fundamental TTL tension.",
+      "b": "Wrong. A longer TTL raises (not lowers) the hit rate, and it does not guarantee consistency — it makes staleness worse, not better.",
+      "c": "Wrong. Cache-aside serves directly from the cache on a hit without revalidating the source; that's the whole point of the cache, so TTL absolutely governs staleness.",
+      "d": "Wrong. Longer TTLs reduce expiry frequency but a hot key's eventual single expiry can still trigger a stampede; TTL length alone doesn't eliminate the thundering-herd problem (it can even worsen the impact of each rare miss)."
+    }
+  },
+  {
+    "id": "sd-tiered-cache-architecture-001",
+    "domain": "system-design",
+    "topic": "tiered-cache-architecture",
+    "difficulty": "medium",
+    "question": "A service uses a two-tier cache: a small per-process in-memory (L1) cache in front of a large shared distributed (L2) cache like Redis. What is the primary benefit of L1, and the main consistency hazard it introduces?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Request flows from app to L1 in-process cache, then to L2 distributed cache, then to the database.",
+      "source": "graph LR\n  App --> L1[L1 in-process] --> L2[L2 distributed] --> DB[(Database)]"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "L1 cuts latency and network/L2 load by serving the hottest keys locally, but because each process holds its own copy, an update or invalidation in L2 can leave stale entries in other processes' L1 until they expire."
+      },
+      {
+        "id": "b",
+        "text": "L1 increases capacity by adding the local memory of every process into one shared pool, with no consistency cost since all processes read the same bytes."
+      },
+      {
+        "id": "c",
+        "text": "L1 exists only to provide durability if L2 crashes, and it is always perfectly consistent with L2."
+      },
+      {
+        "id": "d",
+        "text": "L1 removes the need for L2 entirely because per-process caches are strictly larger than any distributed cache."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The local L1 serves the very hottest keys with no network hop, slashing latency and offloading L2. The hazard is coherence: each process has an independent copy, so when a value changes in L2/DB, other processes can keep serving stale L1 entries until their (typically short) TTL lapses or a broadcast invalidation reaches them.",
+      "b": "Wrong. Per-process L1 caches are independent copies, not one shared pool, and they very much introduce a cross-process consistency cost — the opposite of 'no consistency cost'.",
+      "c": "Wrong. L1 is a latency optimization, not a durability tier, and it is generally *less* consistent with the source than L2, not perfectly consistent.",
+      "d": "Wrong. Per-process caches are small and isolated; they cannot replace a large shared L2 that gives cross-process hits and bigger capacity."
+    }
+  },
+  {
+    "id": "sd-lru-implementation-internals-001",
+    "domain": "system-design",
+    "topic": "lru-implementation-internals",
+    "difficulty": "hard",
+    "question": "You must implement an LRU cache supporting get and put in O(1) average time. Which internal data-structure combination achieves this, and why?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A hash map (key to node) plus a doubly linked list: the map gives O(1) lookup, and the list lets you move a node to the front and evict from the tail in O(1) by splicing pointers."
+      },
+      {
+        "id": "b",
+        "text": "A single sorted array ordered by last-access time: lookups are O(1) and reordering on access is free because the array stays sorted automatically."
+      },
+      {
+        "id": "c",
+        "text": "A min-heap keyed by access timestamp: get and put are O(1) because the heap root is always the least-recently-used item."
+      },
+      {
+        "id": "d",
+        "text": "A plain hash map alone: it already evicts the least-recently-used key automatically when it grows beyond capacity."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. The canonical O(1) LRU pairs a hash map for constant-time key lookup with a doubly linked list maintaining recency order. On access you unlink a node and move it to the head in O(1); eviction removes the tail node in O(1). The map stores direct node references so no scan is needed.",
+      "b": "Wrong. Maintaining a sorted array under access requires shifting elements, which is O(n) per update — not O(1) — and the array does not 'stay sorted automatically'.",
+      "c": "Wrong. A min-heap gives O(log n) for insert/update/extract, not O(1), and updating an arbitrary item's key still costs O(log n).",
+      "d": "Wrong. A plain hash map has no notion of access order and cannot identify the least-recently-used key without extra bookkeeping; it won't evict correctly on its own."
+    }
+  },
+  {
+    "id": "sd-lsm-tree-vs-btree-001",
+    "domain": "system-design",
+    "topic": "lsm-tree-vs-btree",
+    "difficulty": "hard",
+    "question": "A write-heavy time-series ingestion system is choosing between a storage engine built on an LSM-tree (e.g. RocksDB/Cassandra) and one built on an update-in-place B-tree (e.g. a classic relational engine). Which statement most accurately captures the core write-path difference and its consequence?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "An LSM-tree turns random writes into sequential appends to an in-memory memtable that is later flushed and compacted into sorted files, favoring high write throughput; a B-tree updates pages in place, which causes more random I/O on writes but can give lower-overhead point reads."
+      },
+      {
+        "id": "b",
+        "text": "A B-tree absorbs writes as sequential log appends and merges them in the background, while an LSM-tree must seek to and rewrite a specific page for every write, so the LSM-tree is the slower one for write-heavy loads."
+      },
+      {
+        "id": "c",
+        "text": "Both structures write identically; the only difference is that LSM-trees keep data sorted while B-trees keep it unsorted, which matters only for range scans."
+      },
+      {
+        "id": "d",
+        "text": "An LSM-tree avoids write amplification entirely because it never rewrites data, whereas a B-tree rewrites the whole tree on every insert."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. An LSM-tree buffers writes in a memtable and a write-ahead log, then flushes sorted runs (SSTables) to disk and merges them via background compaction, converting random writes into sequential I/O — great for write-heavy ingestion. A B-tree mutates the target page in place, which tends toward random write I/O and page splits, but it keeps a single authoritative location per key, so point reads don't have to check multiple overlapping files. That is the classic write-optimized vs read/space-balanced trade.",
+      "b": "Backwards. The sequential-append/background-merge behavior describes the LSM-tree, and the seek-and-rewrite-a-page behavior describes the B-tree. The roles are swapped here, which is the trap.",
+      "c": "Wrong. Both keep data sorted (B-trees by key within pages, LSM SSTables by key). The defining difference is the write path — append+compact vs update-in-place — not a sorted/unsorted distinction.",
+      "d": "Wrong. LSM-trees absolutely have write amplification: compaction rewrites the same data across levels multiple times. B-trees do not rewrite the whole tree per insert; they modify the affected page(s) and occasionally split. Both have write amplification; the kind and timing differ."
+    }
+  },
+  {
+    "id": "sd-write-ahead-log-001",
+    "domain": "system-design",
+    "topic": "write-ahead-log",
+    "difficulty": "medium",
+    "question": "A database uses a write-ahead log (WAL): before any change is applied to the main data pages, the change is first appended to the log and fsynced. What is the primary guarantee this ordering provides?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It eliminates the need to ever flush dirty data pages to disk, since the log already contains everything."
+      },
+      {
+        "id": "b",
+        "text": "It provides durability and crash recovery: a committed change is safe once logged, and after a crash the engine can replay (redo) logged changes to restore a consistent state."
+      },
+      {
+        "id": "c",
+        "text": "It makes every transaction faster than writing pages directly, because logs are always smaller than data."
+      },
+      {
+        "id": "d",
+        "text": "It guarantees that concurrent transactions never conflict, replacing the need for any locking or MVCC."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. The WAL principle is 'log the intent before mutating the data'. Because the log is appended and fsynced first, a transaction can be reported committed as soon as its log records are durable, even if the data pages are still dirty in memory. After a crash, recovery replays (redoes) committed log records and undoes uncommitted ones, reconstructing a consistent on-disk state. This decouples commit durability from page flushing.",
+      "a": "Wrong. Dirty data pages must still be flushed eventually (e.g. at checkpoints); otherwise the log would grow unbounded and recovery would take ever longer. The WAL defers and batches page writes, it does not abolish them.",
+      "c": "Tempting because sequential log appends are cheaper than scattered random page writes, but the guarantee is durability/recoverability, not 'always faster because logs are smaller'. A log record is not categorically smaller than the data, and the win is sequential I/O plus deferred flushing, not size.",
+      "d": "Wrong. The WAL is about durability and recovery, not concurrency control. Isolation between concurrent transactions is handled separately by locking and/or MVCC; the WAL does not replace them."
+    }
+  },
+  {
+    "id": "sd-mvcc-001",
+    "domain": "system-design",
+    "topic": "mvcc",
+    "difficulty": "hard",
+    "question": "In a database using multi-version concurrency control (MVCC), an UPDATE does not overwrite a row in place; it creates a new version while older versions remain visible to transactions that started earlier. What is the principal benefit MVCC buys, and what recurring cost does it introduce?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Benefit: readers never block writers and writers never block readers, because each transaction reads a consistent snapshot of the data as of its start. Cost: obsolete row versions accumulate and must be reclaimed (e.g. vacuum/garbage collection), and version chains add storage and lookup overhead."
+      },
+      {
+        "id": "b",
+        "text": "Benefit: it removes the need for a write-ahead log, since old versions already serve as the recovery record. Cost: reads become slower because every read must lock the row."
+      },
+      {
+        "id": "c",
+        "text": "Benefit: it guarantees serializable isolation automatically with zero anomalies. Cost: it doubles write latency on every transaction."
+      },
+      {
+        "id": "d",
+        "text": "Benefit: it physically compacts the table so range scans are always sequential. Cost: writers must acquire an exclusive table lock for the duration of each transaction."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. MVCC keeps multiple versions of a row so each transaction can read a stable snapshot without taking read locks; readers and writers therefore don't block each other, which is its headline benefit for read-heavy concurrent workloads. The recurring cost is that superseded versions pile up: the engine needs background reclamation (PostgreSQL's VACUUM, garbage collection of old versions) to free space and keep version chains short, and traversing those chains adds overhead.",
+      "b": "Wrong. MVCC and the WAL are orthogonal: old versions provide snapshot isolation for concurrency, not crash recovery, and engines still rely on a WAL for durability. And MVCC's whole point is that snapshot reads avoid row locks, so 'every read must lock the row' is the opposite of true.",
+      "c": "Wrong. Plain MVCC typically gives snapshot isolation, which still permits anomalies like write skew; it does not automatically yield serializability (that needs extra machinery such as serializable snapshot isolation). It also does not categorically double write latency.",
+      "d": "Wrong. MVCC does not physically reorder/compact the table to make scans sequential, and it specifically avoids long-held exclusive locks — non-conflicting writers proceed concurrently and readers don't block them at all."
+    }
+  },
+  {
+    "id": "sd-isolation-levels-001",
+    "domain": "system-design",
+    "topic": "isolation-levels",
+    "difficulty": "hard",
+    "question": "Under the SQL standard isolation levels, a transaction runs the same range query twice — `SELECT count(*) FROM orders WHERE amount > 100` — and the second run returns additional rows because another transaction committed new matching rows in between. Which anomaly is this, and which is the weakest standard isolation level that prevents it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It is a non-repeatable read, prevented at READ COMMITTED."
+      },
+      {
+        "id": "b",
+        "text": "It is a phantom read, prevented at SERIALIZABLE."
+      },
+      {
+        "id": "c",
+        "text": "It is a dirty read, prevented at REPEATABLE READ."
+      },
+      {
+        "id": "d",
+        "text": "It is a lost update, prevented at READ UNCOMMITTED."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. New rows appearing/disappearing within a re-run of the same range predicate are phantom reads (they concern the set of rows matching a condition, not the value of an already-read row). In the SQL standard, REPEATABLE READ still permits phantoms; SERIALIZABLE is the weakest standard level that forbids them. (Note: some engines like PostgreSQL prevent phantoms at their REPEATABLE READ via snapshot isolation, but the question asks about the SQL standard.)",
+      "a": "Wrong. A non-repeatable read is when a row you already read changes value (or disappears) on re-read — it is about an individual row, not new rows matching a predicate. READ COMMITTED does not even prevent non-repeatable reads; REPEATABLE READ does.",
+      "c": "Wrong. A dirty read is reading another transaction's uncommitted changes; here the other transaction committed, so it isn't dirty. Dirty reads are prevented starting at READ COMMITTED, not REPEATABLE READ.",
+      "d": "Wrong. A lost update is two transactions overwriting each other's changes to the same row; this scenario is a read-side anomaly with newly committed rows. READ UNCOMMITTED is the weakest level and prevents essentially nothing."
+    }
+  },
+  {
+    "id": "sd-optimistic-vs-pessimistic-locking-001",
+    "domain": "system-design",
+    "topic": "optimistic-vs-pessimistic-locking",
+    "difficulty": "medium",
+    "question": "An e-commerce app updates user profile rows. Conflicting concurrent edits to the same profile are rare. The team chooses optimistic locking (a version column checked on update) instead of pessimistic locking (SELECT ... FOR UPDATE). Why does optimistic locking suit this workload, and what happens on the rare conflict?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Optimistic locking holds an exclusive row lock for the whole transaction, which is cheap because conflicts are rare; on conflict the second writer simply waits."
+      },
+      {
+        "id": "b",
+        "text": "Because conflicts are rare, optimistic locking avoids holding locks during the read-modify-write and instead detects a stale version at write time; on the rare conflict the update affects zero rows and the application retries (or surfaces an error)."
+      },
+      {
+        "id": "c",
+        "text": "Optimistic locking guarantees no two writers ever conflict, so retries are never needed; it works only when conflicts are rare because otherwise it would corrupt data."
+      },
+      {
+        "id": "d",
+        "text": "Optimistic locking is preferred because it blocks readers as well as writers, ensuring strict serialization regardless of conflict frequency."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. Optimistic concurrency assumes conflicts are uncommon: it reads the row plus a version/timestamp, does its work without holding a lock, then on UPDATE asserts the version is unchanged (e.g. WHERE id=? AND version=?). If another writer committed first, the version no longer matches, the UPDATE touches zero rows, and the app retries with fresh data or reports a conflict. Low contention means retries are rare, so you save the overhead and lock-holding of pessimistic locking.",
+      "a": "Wrong. Holding an exclusive lock for the whole transaction is pessimistic locking, not optimistic. Optimistic locking deliberately holds no lock during read-modify-write; that's its defining trait.",
+      "c": "Wrong. Optimistic locking does not prevent conflicts — it detects them after the fact and relies on retries. Retries are exactly the mechanism, not something it eliminates. It doesn't corrupt data under high contention; it just retries more, which is why it's a poor fit there.",
+      "d": "Wrong. Optimistic locking does not block readers; that's a property of pessimistic/lock-based schemes. And its suitability is precisely tied to conflict frequency: it shines when conflicts are rare, the opposite of 'regardless of frequency'."
+    }
+  },
+  {
+    "id": "sd-covering-index-001",
+    "domain": "system-design",
+    "topic": "covering-index",
+    "difficulty": "medium",
+    "question": "A frequent query is `SELECT user_id, status FROM orders WHERE customer_id = ?`. The team replaces a plain index on `customer_id` with a covering index on `(customer_id) INCLUDE (user_id, status)`. What concrete benefit does the covering index provide for this query?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The query can be answered entirely from the index, avoiding the extra heap/table lookups (the 'bookmark lookups') that fetch each matching row's remaining columns."
+      },
+      {
+        "id": "b",
+        "text": "It makes writes to the orders table faster because fewer index entries need maintaining."
+      },
+      {
+        "id": "c",
+        "text": "It forces the optimizer to switch from a B-tree to a hash index, which is faster for equality predicates."
+      },
+      {
+        "id": "d",
+        "text": "It guarantees the result rows come back in customer_id order with zero storage cost beyond the original index."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A covering index includes all columns the query needs (the predicate column customer_id plus the projected user_id and status). The engine can satisfy the query as an index-only scan, reading just the index pages and never visiting the base table to fetch the other columns. That eliminates the per-row table/heap lookups, which is often the dominant cost for selective queries returning a few columns.",
+      "b": "Backwards. Adding included columns makes the index wider, so writes that change those columns must maintain more index data, generally making writes slightly more expensive, not faster.",
+      "c": "Wrong. A covering index is still a B-tree (the INCLUDE columns just ride along in the leaf level). It does not change the index type to a hash index.",
+      "d": "Partly tempting — a covering index on customer_id can return rows in that order — but it is not free: storing user_id and status in the index leaves consumes extra space and adds write/maintenance overhead. The 'zero storage cost' claim is false, and ordering isn't the headline benefit here; avoiding table lookups is."
+    }
+  },
+  {
+    "id": "sd-denormalization-001",
+    "domain": "system-design",
+    "topic": "denormalization",
+    "difficulty": "medium",
+    "question": "A read-heavy product-listing page joins five normalized tables on every request and is too slow. The team denormalizes by storing the precomputed listing fields together in one table/document. What is the fundamental trade-off being made?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It trades read performance for write performance: reads avoid expensive joins, but the duplicated data must now be kept consistent on writes, risking update anomalies if a value changes in one place but not another."
+      },
+      {
+        "id": "b",
+        "text": "It improves both reads and writes with no downside, which is why normalized schemas are always inferior at scale."
+      },
+      {
+        "id": "c",
+        "text": "It trades storage for nothing else: the data is duplicated but every copy updates atomically for free, so consistency is never a concern."
+      },
+      {
+        "id": "d",
+        "text": "It eliminates the need for any indexes, because denormalized tables are scanned sequentially faster than indexed joins."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Denormalization duplicates/precomputes data so a read can be served from one place without multi-table joins — faster reads. The cost is that the same fact now lives in multiple rows/documents, so writes must update every copy (more write work and complexity), and if they get out of sync you get update anomalies and stale data. That read-speed-vs-write-consistency tension is the core trade-off.",
+      "b": "Wrong. Denormalization typically makes writes harder, not easier, and normalization remains valuable for write-heavy/consistency-critical workloads. There is a real downside, so 'no downside' is false.",
+      "c": "Wrong. Duplicated copies do not update atomically 'for free'; keeping them consistent is exactly the burden denormalization adds, and consistency very much is a concern.",
+      "d": "Wrong. Denormalized tables still benefit from and use indexes; flattening the schema does not make full scans categorically faster than indexed access. The trade-off is about joins vs duplication, not about removing indexes."
+    }
+  },
+  {
+    "id": "sd-materialized-view-001",
+    "domain": "system-design",
+    "topic": "materialized-view",
+    "difficulty": "medium",
+    "question": "A dashboard runs an expensive aggregation (`GROUP BY region` over a billion-row table) on every page load. An engineer proposes a materialized view instead of a regular (virtual) view. How does a materialized view help, and what new concern does it introduce?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A materialized view stores the precomputed query result physically, so reads are fast; the trade-off is staleness — the stored result must be refreshed (on a schedule or incrementally), so it can lag behind the underlying data."
+      },
+      {
+        "id": "b",
+        "text": "A materialized view is just a saved query that re-executes the aggregation on every read, so it has identical performance to a regular view but cleaner syntax."
+      },
+      {
+        "id": "c",
+        "text": "A materialized view guarantees the result is always perfectly up to date in real time, with no refresh needed, because the database rewrites it on every base-table change at no cost."
+      },
+      {
+        "id": "d",
+        "text": "A materialized view speeds reads by storing the result but cannot be indexed, so range queries on it are slower than on the base table."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A materialized view persists the computed result set on disk, so the costly aggregation runs once at refresh time rather than on every read — turning an expensive query into a cheap lookup. The new concern is freshness: because the result is a stored snapshot, it can be stale and must be refreshed (full or incremental, scheduled or triggered), and you choose how much lag is acceptable.",
+      "b": "Wrong. That describes a regular (virtual) view, which is just a stored query re-executed on each read. A materialized view's whole point is that it physically stores the result, giving very different performance.",
+      "c": "Wrong. Real-time, zero-cost, always-current refresh is not what a materialized view provides. Refreshing has a cost, and between refreshes the data can be stale; some systems offer incremental/eager refresh, but never 'at no cost'.",
+      "d": "Wrong. Materialized views can typically be indexed (you can build indexes on the stored result), which is one of their advantages. The real trade-off is staleness, not an inability to index."
+    }
+  },
+  {
+    "id": "sd-lsm-tree-read-path-001",
+    "domain": "system-design",
+    "topic": "lsm-tree-read-path",
+    "difficulty": "hard",
+    "question": "In an LSM-tree storage engine, a point lookup for a key may have to check the in-memory memtable and then several immutable on-disk SSTables, because a key's versions can be spread across files until compaction merges them. Which technique most directly reduces the cost of this read-amplification problem?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A Bloom filter per SSTable, which lets the engine skip files that definitely do not contain the key, avoiding most unnecessary disk reads."
+      },
+      {
+        "id": "b",
+        "text": "A write-ahead log, which records each write so reads can be served from the log instead of the SSTables."
+      },
+      {
+        "id": "c",
+        "text": "Increasing the isolation level to SERIALIZABLE, which forces the engine to read fewer files."
+      },
+      {
+        "id": "d",
+        "text": "Switching the memtable to a hash table so that on-disk SSTables no longer need to be consulted."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Each SSTable carries a Bloom filter over its keys. Before doing the (expensive) work of searching an SSTable on disk, the engine probes its Bloom filter; a negative result means the key is definitely absent, so that file is skipped entirely. Since most SSTables don't contain a given key, this prunes the vast majority of file lookups and directly attacks LSM read amplification. (Compaction also helps by reducing the number of overlapping files.)",
+      "b": "Wrong. The WAL exists for durability/crash recovery, not for serving point reads. Reads come from the memtable and SSTables; the log is not a read-optimized lookup structure.",
+      "c": "Wrong. Isolation levels govern transaction concurrency semantics, not how many physical SSTable files a point lookup must inspect. They don't reduce read amplification.",
+      "d": "Wrong. The memtable structure (skip list, hash, etc.) only affects the in-memory portion. Older versions of a key still live in on-disk SSTables that must be consulted, so changing the memtable doesn't remove the need to check those files."
+    }
+  },
+  {
+    "id": "sd-wal-group-commit-001",
+    "domain": "system-design",
+    "topic": "wal-group-commit",
+    "difficulty": "medium",
+    "question": "Each committing transaction must fsync its records to the write-ahead log before it can be acknowledged, and fsync is expensive. Under high commit concurrency, which optimization lets the engine pay roughly one fsync for many concurrent commits without sacrificing durability?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Group commit: the engine batches log records from many concurrently committing transactions and flushes them with a single fsync, so all of them become durable together."
+      },
+      {
+        "id": "b",
+        "text": "Skipping fsync entirely and relying on the OS page cache, which is safe because the cache is never lost on a crash."
+      },
+      {
+        "id": "c",
+        "text": "Writing each transaction's log to a separate file so the fsyncs can run fully in parallel with no batching."
+      },
+      {
+        "id": "d",
+        "text": "Acknowledging commits before the log is written and replaying any missing transactions from the data pages after a crash."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Group commit (a.k.a. commit batching) amortizes the fixed cost of fsync: instead of one flush per transaction, the engine collects the log records of all transactions ready to commit in a short window and forces them to durable storage with a single fsync. Every transaction in that batch is acknowledged only after the shared flush completes, so durability is fully preserved while throughput rises sharply under concurrency.",
+      "b": "Wrong. The OS page cache is volatile — its unflushed contents are lost on a crash/power failure. Skipping fsync trades away durability, which is exactly what we must not sacrifice.",
+      "c": "Wrong. Separate files per transaction multiplies fsync calls rather than amortizing them, and many parallel fsyncs still each pay the device's flush cost. The win comes from batching into one flush, not fanning out.",
+      "d": "Wrong. Acknowledging before the log is durable means a crash can lose committed transactions, and you cannot reconstruct them 'from the data pages' because those pages were updated based on the very log records that weren't persisted. That breaks the WAL's durability guarantee."
+    }
+  },
+  {
+    "id": "sd-raft-leader-election-001",
+    "domain": "system-design",
+    "topic": "raft-leader-election",
+    "difficulty": "medium",
+    "question": "In Raft, a follower's election timeout fires and it becomes a candidate. What must it obtain to become the new leader for that term?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Acknowledgements from every other node in the cluster, so the new leader is unanimously agreed."
+      },
+      {
+        "id": "b",
+        "text": "Votes from a majority (quorum) of the nodes, including its own vote, for its candidate term."
+      },
+      {
+        "id": "c",
+        "text": "Approval from the previous leader, which hands off authority before stepping down."
+      },
+      {
+        "id": "d",
+        "text": "The highest node ID among all reachable nodes, which deterministically breaks the tie."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Unanimity is too strong and would make the cluster unavailable whenever any single node is down. Raft deliberately requires only a majority so it can tolerate a minority of failures.",
+      "b": "Correct. A candidate increments the term, votes for itself, and requests votes from peers; once it has votes from a strict majority of the cluster it becomes leader. Requiring a majority guarantees any two leaders' vote sets overlap, so at most one leader can be elected per term.",
+      "c": "Raft elections happen precisely because the old leader is unreachable or has failed, so there is no orderly handoff from the prior leader. Authority comes from winning votes, not from the predecessor.",
+      "d": "Highest-ID selection is a different family of leader-election algorithms (e.g. bully). Raft uses randomized timeouts plus majority voting, and the log-up-to-date check, not a node-ID ranking."
+    }
+  },
+  {
+    "id": "sd-raft-split-vote-001",
+    "domain": "system-design",
+    "topic": "raft-split-vote",
+    "difficulty": "hard",
+    "question": "A 5-node Raft cluster repeatedly fails to elect a leader: two candidates keep starting elections at nearly the same instant, each grabbing two votes, so neither reaches a majority and the term keeps advancing. What is the standard mechanism Raft uses to break out of this split-vote stalemate?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Randomized election timeouts, so nodes time out at staggered moments and one candidate usually starts (and wins) before the others."
+      },
+      {
+        "id": "b",
+        "text": "Lowering the quorum requirement from a majority to a plurality once a split vote is detected."
+      },
+      {
+        "id": "c",
+        "text": "Letting a candidate count a vote from a node that already voted for someone else in the same term."
+      },
+      {
+        "id": "d",
+        "text": "Promoting whichever candidate has the lexicographically smallest node ID after the first failed round."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Each node picks its election timeout randomly from a range, so it is unlikely two nodes time out simultaneously across repeated rounds. The node that times out first typically wins votes before any rival starts, and even after a split, the random staggering breaks the symmetry on a subsequent round.",
+      "b": "Raft never relaxes the majority requirement; a plurality could elect two leaders in the same term and break safety. Liveness is restored by timing randomization, not by weakening the quorum rule.",
+      "c": "A node grants at most one vote per term (first-come-first-served), which is exactly what prevents two candidates from both reaching a majority. Allowing double-voting would violate the single-leader-per-term guarantee.",
+      "d": "Raft does not rank candidates by node ID. It resolves contention through randomized timeouts and the up-to-date-log restriction, not a deterministic ID tiebreak."
+    }
+  },
+  {
+    "id": "sd-read-repair-001",
+    "domain": "system-design",
+    "topic": "read-repair",
+    "difficulty": "medium",
+    "question": "In a Dynamo-style store, a client read with R=2 contacts two replicas and gets two different versions of the key. The coordinator returns the newer value to the client and also writes that newer value back to the replica that was stale. What is this last step called, and why does it matter?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Hinted handoff: the coordinator temporarily stores the value for a down replica until it returns."
+      },
+      {
+        "id": "b",
+        "text": "Read repair: detecting divergence on the read path and updating the stale replica, which opportunistically converges replicas that are actively being read."
+      },
+      {
+        "id": "c",
+        "text": "Quorum reconfiguration: shrinking R so future reads avoid the slow replica."
+      },
+      {
+        "id": "d",
+        "text": "Anti-entropy compaction: merging SSTables so the divergent versions collapse into one on disk."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Hinted handoff is a write-path technique for when a target replica is unreachable; a neighbor holds a 'hint' and replays it later. Here both replicas responded and the fix happened during a read, so it is not hinted handoff.",
+      "b": "Correct. Read repair compares the versions returned during a read, picks the freshest (via vector clocks or timestamps), serves it, and pushes it back to the replicas that were behind. It cheaply heals replicas that are being read, though it only touches keys that are actually requested.",
+      "c": "Read repair does not change R or the replica set; it corrects data, not configuration. Tuning R is a separate operational decision.",
+      "d": "Anti-entropy (often Merkle-tree based) is a background reconciliation process across whole key ranges, independent of any client read. Read repair is the foreground, per-read variant."
+    }
+  },
+  {
+    "id": "sd-hinted-handoff-001",
+    "domain": "system-design",
+    "topic": "hinted-handoff",
+    "difficulty": "medium",
+    "question": "A write targets three replicas but one of them is temporarily down. To preserve write availability, a healthy node accepts the write on the down node's behalf and stores a 'hint' to replay later. What problem does hinted handoff specifically address, and what is its main caveat?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It keeps writes available during transient node outages by buffering them on a substitute node; the caveat is that if the substitute also fails before replaying the hint, those writes can be lost."
+      },
+      {
+        "id": "b",
+        "text": "It guarantees every write is durably committed to all replicas before acknowledging, eliminating any window of data loss."
+      },
+      {
+        "id": "c",
+        "text": "It elects a replacement leader for the down replica so writes can continue to be serialized."
+      },
+      {
+        "id": "d",
+        "text": "It permanently reassigns the down node's key range to the substitute, so the down node is decommissioned."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Hinted handoff lets the system keep accepting writes when a target replica is briefly unreachable: a healthy coordinator/neighbor stores the data plus a hint and replays it to the original replica once it recovers. The caveat is durability: the hint lives on the substitute, so if that node dies before replay (and the write didn't reach enough other replicas), the write can be lost.",
+      "b": "Hinted handoff is the opposite of a synchronous all-replica commit; it trades some durability for availability and deliberately allows a replay window. It does not guarantee all replicas have the write at ack time.",
+      "c": "Leaderless Dynamo-style systems have no per-replica leader to elect. Hinted handoff is about buffering writes, not about serializing them through a leader.",
+      "d": "The reassignment is temporary, not permanent. Once the original node recovers, the hint is replayed and ownership returns to it; the substitute does not take over the range for good."
+    }
+  },
+  {
+    "id": "sd-merkle-anti-entropy-001",
+    "domain": "system-design",
+    "topic": "merkle-anti-entropy",
+    "difficulty": "hard",
+    "question": "Two replicas holding millions of keys want to find and reconcile only the keys where they diverge, without shipping their entire datasets to each other. They each build a Merkle tree over their key ranges and compare it top-down, starting from the root hash. Why is the Merkle-tree approach efficient for this anti-entropy task?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "If two subtree hashes match, all keys under them are identical, so replicas only descend into and exchange the subtrees whose hashes differ, narrowing reconciliation to the divergent ranges in roughly logarithmic comparisons."
+      },
+      {
+        "id": "b",
+        "text": "Merkle trees compress the data so the full dataset can be transferred in a fraction of the bytes, after which the replicas diff the decompressed copies."
+      },
+      {
+        "id": "c",
+        "text": "Each leaf stores a vector clock, so comparing roots immediately reveals which replica's writes happened first without any further traversal."
+      },
+      {
+        "id": "d",
+        "text": "The tree keeps keys sorted, so a single binary search over the root finds the one divergent key in O(log n) time."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. A Merkle tree hashes child nodes up to a single root. If two roots are equal, the underlying data is identical and nothing more is exchanged. If they differ, the replicas recurse only into the child subtrees whose hashes disagree, pruning away all matching ranges. This means the amount of data exchanged scales with the number of differences, not the size of the dataset.",
+      "b": "Merkle trees are about hashing for comparison, not compression. They let replicas avoid transferring matching data at all; they do not transfer a compressed copy of everything and then diff it.",
+      "c": "Vector clocks resolve causality of individual conflicting values; they are not what makes the tree comparison efficient, and a root-only comparison does not reveal per-key ordering. The efficiency comes from hash pruning of matching subtrees.",
+      "d": "There can be many divergent keys, not one, and the tree localizes divergence by hash equality of subtrees rather than by binary-searching for a single key. It bounds work by the number of differences, not by a single-key search."
+    }
+  },
+  {
+    "id": "sd-vector-clocks-001",
+    "domain": "system-design",
+    "topic": "vector-clocks",
+    "difficulty": "hard",
+    "question": "A leaderless store uses vector clocks to version each key. Two replicas return versions with clocks [A:2, B:1] and [A:1, B:2] for the same key. How should the system interpret these two clocks, and what does it do?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Neither clock dominates the other (each has a counter the other lacks), so the writes are concurrent conflicts; the system keeps both as siblings for the application or a merge function to resolve."
+      },
+      {
+        "id": "b",
+        "text": "[A:2, B:1] is newer because its first component is larger, so it wins and the other version is discarded."
+      },
+      {
+        "id": "c",
+        "text": "The clocks are equal in total counter sum (both add to 3), so the values are identical and no conflict exists."
+      },
+      {
+        "id": "d",
+        "text": "The system picks the value with the most recent wall-clock timestamp, since vector clocks only track ordering and cannot decide ties."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. One vector clock dominates another only if it is greater than or equal in every component. Here [A:2,B:1] has a larger A but smaller B than [A:1,B:2], so neither dominates: the writes are causally concurrent. Vector clocks detect this conflict, and resolution is deferred to siblings/application-level merge (or a policy like LWW).",
+      "b": "Comparing only the first component is wrong; dominance requires every component to be greater-or-equal. Because B disagrees in the other direction, you cannot declare one strictly newer.",
+      "c": "Summing the counters is not how vector clocks are compared; equal sums do not imply equal or identical values. Component-wise comparison here shows a genuine conflict, not equality.",
+      "d": "Falling back to wall-clock LWW is one possible resolution policy, but it is not the interpretation of the clocks themselves. The clocks' job here is to surface that the writes are concurrent; choosing LWW is a separate decision that can silently drop a write."
+    }
+  },
+  {
+    "id": "sd-lww-vs-crdt-001",
+    "domain": "system-design",
+    "topic": "lww-vs-crdt",
+    "difficulty": "hard",
+    "question": "Two offline replicas concurrently update a shopping-cart object and later sync. With a Last-Write-Wins (LWW) register the cart is resolved by highest timestamp; with a CRDT (e.g. an OR-Set) it is resolved by the type's merge rule. What is the key correctness difference between these two strategies for this workload?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "LWW deterministically discards the 'losing' concurrent update, so one replica's additions can be silently lost; a well-chosen CRDT merges both updates so no concurrent change is dropped."
+      },
+      {
+        "id": "b",
+        "text": "CRDTs require a coordinator to agree on a global order before merging, whereas LWW merges without any coordination."
+      },
+      {
+        "id": "c",
+        "text": "LWW guarantees the replicas converge to the same value, while CRDTs may converge to different values on different replicas."
+      },
+      {
+        "id": "d",
+        "text": "LWW preserves all concurrent updates by keeping every version, whereas a CRDT collapses them into a single latest value."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. LWW resolves a conflict by keeping only the value with the larger timestamp, which means a concurrent update with a smaller timestamp is thrown away even though it carried real changes (e.g. an item added to the cart). A CRDT like an OR-Set defines a commutative, associative merge so concurrent adds/removes are combined rather than overwritten, avoiding lost updates for this workload.",
+      "b": "Backwards. CRDTs are specifically designed to merge without coordination; their merge operation is commutative and associative so replicas can reconcile peer-to-peer. LWW also needs no coordinator, so this does not distinguish them.",
+      "c": "Both are designed to converge; the difference is what they converge to. LWW converges by dropping a write; CRDTs converge while preserving the merged effect. CRDTs do not diverge across replicas.",
+      "d": "This reverses the two. LWW keeps a single winning value (and drops the rest); a CRDT is the strategy that preserves the combined effect of concurrent updates via its merge rule."
+    }
+  },
+  {
+    "id": "sd-gossip-protocol-001",
+    "domain": "system-design",
+    "topic": "gossip-protocol",
+    "difficulty": "medium",
+    "question": "A large cluster propagates membership and failure information using a gossip (epidemic) protocol: each node periodically picks a few random peers and exchanges state. Why is gossip favored over having every node directly heartbeat every other node in big clusters?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Gossip spreads information in O(log n) rounds with bounded per-node message load, scaling far better than all-to-all heartbeating whose cost grows with the number of nodes each node must contact."
+      },
+      {
+        "id": "b",
+        "text": "Gossip delivers every state change to all nodes instantly and synchronously, providing stronger consistency than heartbeating."
+      },
+      {
+        "id": "c",
+        "text": "Gossip requires a central coordinator that fans state out to nodes, eliminating per-node messaging entirely."
+      },
+      {
+        "id": "d",
+        "text": "Gossip guarantees no node ever holds stale membership information because each round overwrites all prior state."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. In gossip, each node contacts only a small constant number of random peers per round, yet information spreads exponentially, reaching the whole cluster in about O(log n) rounds. This keeps per-node load bounded and tolerant of failures, unlike all-to-all heartbeating where each node's contact set (and total messages) grows with cluster size.",
+      "b": "Gossip is eventually consistent and probabilistic, not instant or synchronous. Information takes several rounds to converge, and at any instant some nodes may not yet know a change.",
+      "c": "Gossip is explicitly decentralized: there is no central coordinator. Each node independently chooses random peers, which is why it avoids a single point of failure or bottleneck.",
+      "d": "Gossip tolerates and gradually eliminates staleness over rounds, but it does not guarantee zero staleness at any moment; convergence is eventual, not instantaneous."
+    }
+  },
+  {
+    "id": "sd-split-brain-failover-001",
+    "domain": "system-design",
+    "topic": "split-brain-failover",
+    "difficulty": "hard",
+    "question": "A primary-replica database is configured for automatic failover: if a replica stops seeing the primary, it promotes itself. During a network partition that isolates (but does not kill) the primary, the replica promotes and clients on both sides accept writes. What failure is this, and which mechanism most directly prevents it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Split-brain: two nodes both believe they are primary and accept divergent writes. Requiring a promotion to win a majority quorum (fencing the old primary) prevents two active primaries."
+      },
+      {
+        "id": "b",
+        "text": "Read-your-writes violation; it is prevented by routing all reads to the promoted replica."
+      },
+      {
+        "id": "c",
+        "text": "Cascading failure; it is prevented by adding a circuit breaker between clients and the database."
+      },
+      {
+        "id": "d",
+        "text": "Clock skew; it is prevented by synchronizing both nodes to NTP before allowing writes."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. When a partition lets the old primary keep running while a replica also promotes, you get split-brain: two primaries accepting conflicting writes that later cannot be cleanly reconciled. The standard guard is to require a promotion to obtain a majority quorum (so only the side with a majority can have a primary) and to fence/STONITH the old primary, ensuring at most one writable node.",
+      "b": "Read-your-writes is a session read-consistency property; it does not describe two nodes both accepting writes. The core issue here is dual write authority, not a client failing to see its own write.",
+      "c": "A circuit breaker protects callers from a failing dependency by tripping after errors; it does nothing to ensure only one primary exists during a partition, so it does not address split-brain.",
+      "d": "Clock skew can complicate timestamp-based conflict resolution, but the partition here causes two primaries regardless of synchronized clocks. NTP does not stop both sides from accepting writes."
+    }
+  },
+  {
+    "id": "sd-sync-vs-async-replication-001",
+    "domain": "system-design",
+    "topic": "sync-vs-async-replication",
+    "difficulty": "medium",
+    "question": "An architect must choose between synchronous and asynchronous replication for a primary that has replicas. Which statement correctly pairs each mode with its defining tradeoff at commit time?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Synchronous: the primary waits for a replica to acknowledge before committing, giving no loss of acknowledged writes on primary failure but higher write latency and reduced availability if the replica is slow or down. Async: the primary commits immediately, giving low latency but risking loss of the last unreplicated writes if the primary fails."
+      },
+      {
+        "id": "b",
+        "text": "Synchronous replication has lower write latency than async because it parallelizes the write to all replicas at once."
+      },
+      {
+        "id": "c",
+        "text": "Async replication guarantees no data loss on failover, while synchronous replication may lose recent writes."
+      },
+      {
+        "id": "d",
+        "text": "Both modes have identical durability; the only difference is that synchronous uses TCP and async uses UDP for replica traffic."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Synchronous replication blocks the commit until at least one replica durably acknowledges, so a failover loses no acknowledged writes, but the client pays the round-trip latency and the primary's availability is coupled to the replica being responsive. Async commits locally first and ships changes in the background, minimizing latency but creating a window where unreplicated writes are lost if the primary dies. This is the canonical latency/availability vs durability tradeoff.",
+      "b": "Synchronous replication adds the replica round-trip to the commit path, so it has higher, not lower, write latency than async. Parallelizing across replicas does not remove the wait for an acknowledgement.",
+      "c": "This reverses the modes. Synchronous is the one that protects acknowledged writes on failover; async is the one that can lose the most recent unreplicated writes.",
+      "d": "The transport protocol is not the distinction, and durability differs significantly between the modes. The real difference is whether the commit waits for replica acknowledgement."
+    }
+  },
+  {
+    "id": "sd-kafka-partitions-001",
+    "domain": "system-design",
+    "topic": "kafka-partitions",
+    "difficulty": "medium",
+    "question": "A Kafka topic has 6 partitions and a single consumer group subscribes to it. The team scales the group from 3 consumers to 10 consumers hoping to increase parallelism, but throughput stops improving past 6 consumers. Why?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "A partition is consumed by at most one consumer within a group, so with 6 partitions only 6 consumers can do work; the extra 4 sit idle."
+      },
+      {
+        "id": "b",
+        "text": "Kafka caps each consumer group at 6 members regardless of partition count, so the 4 extra consumers fail to join."
+      },
+      {
+        "id": "c",
+        "text": "Each consumer can only read one message per partition at a time, so adding consumers beyond the broker count adds no parallelism."
+      },
+      {
+        "id": "d",
+        "text": "Throughput is limited by replication factor, not partition count, so adding consumers never helps without adding replicas."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Within a consumer group, each partition is assigned to exactly one consumer, so the number of partitions is the ceiling on useful parallelism for that group. With 6 partitions, at most 6 consumers can be actively reading; the remaining 4 are assigned no partitions and idle. To scale beyond 6 you must increase the partition count.",
+      "b": "Wrong. There is no fixed cap of 6 members; a group can have many more consumers than partitions. The extra consumers join fine, they just receive no partition assignment and stay idle.",
+      "c": "Misstates the limit. The constraint is the one-consumer-per-partition-per-group assignment rule, not a per-broker count or a one-message-at-a-time read. A single consumer happily streams many messages from its assigned partition(s).",
+      "d": "Replication factor governs durability and fault tolerance, not consumer read parallelism. Consumers read from partition leaders; adding replicas does not raise the number of consumers that can work in parallel."
+    }
+  },
+  {
+    "id": "sd-consumer-group-rebalancing-001",
+    "domain": "system-design",
+    "topic": "consumer-group-rebalancing",
+    "difficulty": "medium",
+    "question": "In a Kafka consumer group, what triggers a consumer group rebalance, and what is the main operational downside of frequent rebalances?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Only adding a new topic triggers a rebalance; the downside is that offsets are reset to the earliest position each time."
+      },
+      {
+        "id": "b",
+        "text": "A member joining or leaving (or partitions being added) triggers a rebalance, during which partition assignments are recomputed and consumption pauses (a 'stop-the-world' stall)."
+      },
+      {
+        "id": "c",
+        "text": "Rebalances are triggered by the broker every fixed interval, and the downside is that in-flight messages are permanently lost."
+      },
+      {
+        "id": "d",
+        "text": "Rebalances happen whenever a message is committed; the downside is duplicate delivery of every committed message."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. A rebalance is triggered when group membership changes (a consumer joins, leaves, or is considered dead after missing heartbeats / exceeding max.poll.interval), or when the subscribed partitions change. The group coordinator reassigns partitions to members, and under the classic eager protocol consumption pauses while assignments are recomputed. Frequent rebalances therefore cause repeated processing stalls; this is why cooperative/incremental rebalancing and tuned session/poll timeouts exist.",
+      "a": "Wrong. Membership changes (not just adding a topic) trigger rebalances, and a rebalance does not reset committed offsets to earliest; consumers resume from their last committed offsets.",
+      "c": "Brokers do not fire rebalances on a fixed timer, and messages are not 'permanently lost' by a rebalance. Offsets are committed, so consumption resumes where it left off (possibly reprocessing uncommitted messages).",
+      "d": "Commits do not trigger rebalances. Duplicate delivery can occur around a rebalance for uncommitted work, but a rebalance is not caused by committing, nor does it duplicate every committed message."
+    }
+  },
+  {
+    "id": "sd-exactly-once-dedup-001",
+    "domain": "system-design",
+    "topic": "exactly-once-dedup",
+    "difficulty": "hard",
+    "question": "A payment service consumes from an at-least-once stream and must charge each order once. Engineers want 'exactly-once' end-to-end results at the application boundary. Which approach actually delivers effectively-once processing for the external side effect (the charge)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Rely on the network being reliable enough that duplicates effectively never happen, so no dedup is needed."
+      },
+      {
+        "id": "b",
+        "text": "Attach a unique idempotency/dedup key to each message and have the consumer record processed keys atomically with the side effect, so a redelivered duplicate is recognized and skipped."
+      },
+      {
+        "id": "c",
+        "text": "Switch the consumer to commit offsets before processing each message, so a message is never seen twice."
+      },
+      {
+        "id": "d",
+        "text": "Increase the broker replication factor so messages are never redelivered to the consumer."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. True end-to-end exactly-once across an external side effect is achieved through deduplication on a stable key: the consumer checks/records a unique message (or business) key in the same atomic operation (e.g. a transaction or conditional write) that performs the charge. On redelivery the key is already present, so the charge is skipped. This makes processing effectively-once even though delivery remains at-least-once.",
+      "a": "Wrong and dangerous. Distributed messaging produces duplicates from retries, rebalances, and crashes regardless of network quality; assuming they 'never happen' guarantees occasional double charges.",
+      "c": "Committing offsets before processing converts the problem into at-most-once: if the consumer crashes after committing but before charging, the message is lost (no charge) rather than duplicated. It does not give exactly-once.",
+      "d": "Replication factor affects durability and broker fault tolerance, not consumer-side redelivery. Consumers still reprocess uncommitted messages after a crash or rebalance, so replication alone never prevents duplicates."
+    }
+  },
+  {
+    "id": "sd-dead-letter-queue-001",
+    "domain": "system-design",
+    "topic": "dead-letter-queue",
+    "difficulty": "medium",
+    "question": "A consumer keeps failing to process one malformed message ('poison pill'). Without a dead-letter queue (DLQ), what failure mode is most likely, and how does a DLQ address it?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Without a DLQ the consumer silently drops the message; a DLQ instead forces the broker to retry it forever until it succeeds."
+      },
+      {
+        "id": "b",
+        "text": "Without a DLQ the consumer can get stuck retrying the same un-processable message and block the partition behind it; a DLQ lets the consumer route the message aside after N attempts so the rest of the stream keeps flowing."
+      },
+      {
+        "id": "c",
+        "text": "Without a DLQ the message is delivered to every consumer group at once; a DLQ ensures only one group receives it."
+      },
+      {
+        "id": "d",
+        "text": "Without a DLQ offsets cannot be committed at all; a DLQ exists purely to store committed offsets for failed messages."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. With ordered partition consumption, a message that always fails (a poison pill) can stall progress: the consumer cannot commit past it without either losing it or looping on it, blocking everything behind it in that partition. A DLQ breaks the deadlock by moving the message to a separate queue/topic after a bounded number of retries, so the consumer advances and the bad message can be inspected or reprocessed out of band.",
+      "a": "Wrong on both halves. The default failure mode is usually getting stuck or dropping per the consumer's error handling, not a guaranteed silent drop, and a DLQ does not mean infinite retry; it is precisely the escape hatch from infinite retry.",
+      "c": "Fan-out to multiple consumer groups is independent of DLQs; a DLQ does not control how many groups receive a message.",
+      "d": "Offsets can be committed without any DLQ. A DLQ is a destination for un-processable messages, not a store of offsets."
+    }
+  },
+  {
+    "id": "sd-ordering-guarantees-001",
+    "domain": "system-design",
+    "topic": "ordering-guarantees",
+    "difficulty": "hard",
+    "question": "A team needs all events for a given user processed in order. They use a Kafka topic with multiple partitions. Which producer choice preserves per-user ordering, and what is the inherent limitation of that guarantee?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Kafka guarantees total ordering across the whole topic automatically, so any partitioning preserves per-user order with no limitation."
+      },
+      {
+        "id": "b",
+        "text": "Key messages by user id so all of a user's events hash to the same partition; ordering is then guaranteed only within each partition, not across partitions, and is tied to that user mapping to one partition."
+      },
+      {
+        "id": "c",
+        "text": "Use a random partitioner for even load; ordering is preserved because each consumer sorts messages by timestamp before processing."
+      },
+      {
+        "id": "d",
+        "text": "Set the producer to round-robin across partitions and rely on the consumer group to reassemble global order after the fact."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. Kafka guarantees ordering only within a single partition. Producing with the user id as the message key makes the default partitioner hash all of that user's events to the same partition, preserving their relative order. The inherent limits: there is no ordering guarantee across partitions (so different users may interleave arbitrarily), and all of a hot user's traffic lands on one partition, which can create a hotspot and caps that user's throughput.",
+      "a": "Wrong. Kafka does not provide total topic-wide ordering across partitions; ordering is a per-partition property only. Relying on automatic global order is the core misconception here.",
+      "c": "A random partitioner scatters a user's events across partitions, destroying per-user order. Consumer-side timestamp sorting cannot reliably reconstruct order because messages arrive on independent partitions with no bounded skew and timestamps may collide or be non-monotonic.",
+      "d": "Round-robin spreads a user's events across partitions, and consumer groups do not reassemble a global order; each consumer independently reads its assigned partitions, so cross-partition order is lost."
+    }
+  },
+  {
+    "id": "sd-log-compaction-001",
+    "domain": "system-design",
+    "topic": "log-compaction",
+    "difficulty": "medium",
+    "question": "A Kafka topic stores the latest profile state per user keyed by user id, with log compaction enabled (instead of time/size retention). What does compaction guarantee, and what is a consequence consumers must handle?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Compaction deletes all messages older than the retention period; consumers must re-fetch from the origin database for anything older."
+      },
+      {
+        "id": "b",
+        "text": "Compaction retains at least the latest value for each key while reclaiming superseded older values; a consumer reading the whole log sees the current state per key, but intermediate historical updates for a key may be gone."
+      },
+      {
+        "id": "c",
+        "text": "Compaction merges all partitions into one so that ordering becomes global; consumers must therefore re-key their data."
+      },
+      {
+        "id": "d",
+        "text": "Compaction compresses message payloads with gzip to save space; consumers must decompress each record before use."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. Log compaction keeps, for each key, at least the most recent value, while the background cleaner removes earlier records that have been superseded by a later value for the same key. This lets the topic act as a durable 'latest state per key' changelog (e.g. for rebuilding state on startup). The consequence: a consumer can no longer assume every historical update for a key is present, so it must be designed to reconstruct state from latest-per-key values rather than replaying a complete update history. (Deletes are represented by tombstone records.)",
+      "a": "That describes time/size-based retention, the alternative to compaction. Compaction is keyed and retains the latest value per key rather than dropping everything past a time threshold.",
+      "c": "Compaction operates per partition and per key; it does not merge partitions or change ordering semantics into a global order.",
+      "d": "Payload compression (gzip/snappy/etc.) is a separate, codec-level feature. Log compaction is about removing superseded keyed records, not byte-level compression."
+    }
+  },
+  {
+    "id": "sd-change-data-capture-001",
+    "domain": "system-design",
+    "topic": "change-data-capture",
+    "difficulty": "medium",
+    "question": "A team wants to stream every row change from their primary OLTP database into Kafka for downstream consumers, without modifying application write paths. Which Change Data Capture (CDC) approach is most robust, and why?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Poll each table every few seconds with SELECT ... WHERE updated_at > last_seen; it captures all changes reliably with no missed updates or deletes."
+      },
+      {
+        "id": "b",
+        "text": "Tail the database's write-ahead/transaction log (e.g. via Debezium) and publish the decoded change events; it captures inserts, updates, and deletes in commit order without touching application code."
+      },
+      {
+        "id": "c",
+        "text": "Have the application dual-write each change to the database and to Kafka in the same request, guaranteeing the two stay consistent."
+      },
+      {
+        "id": "d",
+        "text": "Take a full table snapshot every hour and diff it against the previous snapshot to derive changes in real time."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. Log-based CDC reads the database's write-ahead/replication log (the same stream replicas consume) and converts committed changes into events. It captures every insert, update, and delete in commit order, imposes minimal load, requires no application changes, and does not miss hard deletes; tools like Debezium implement exactly this.",
+      "a": "Query/timestamp polling is fragile: it misses hard deletes (a deleted row no longer matches the query), can miss rows updated within the same timestamp tick, adds query load, and has latency bounded by the poll interval. It is a fallback, not the robust option.",
+      "c": "Dual writes do not guarantee consistency: the process can crash between the DB commit and the Kafka publish, leaving them divergent. This is the classic dual-write problem that CDC (or the transactional outbox pattern) exists to avoid, and it also requires modifying write paths.",
+      "d": "Hourly snapshot diffing is high-overhead, far from real time, and scales poorly on large tables. It also struggles to attribute ordering to individual changes within the interval."
+    }
+  },
+  {
+    "id": "sd-push-vs-pull-fanout-001",
+    "domain": "system-design",
+    "topic": "push-vs-pull-fanout",
+    "difficulty": "medium",
+    "question": "When designing a feed/notification fan-out, what is the core trade-off between fan-out-on-write (push) and fan-out-on-read (pull)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Push precomputes and writes each event into every recipient's feed at publish time (fast reads, expensive writes for high-follower producers); pull assembles the feed by querying sources at read time (cheap writes, more expensive reads)."
+      },
+      {
+        "id": "b",
+        "text": "Push and pull are identical in cost; the only difference is push uses TCP and pull uses HTTP."
+      },
+      {
+        "id": "c",
+        "text": "Push makes reads slower because each reader must contact every source, while pull makes writes slower because every write is duplicated."
+      },
+      {
+        "id": "d",
+        "text": "Pull guarantees real-time delivery while push always introduces unbounded delay, so push is never used for feeds."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Fan-out-on-write (push) does the work at publish time by inserting the item into each follower's materialized feed, so reads are cheap but a celebrity with millions of followers makes a single write enormously expensive. Fan-out-on-read (pull) leaves the work to read time by querying the followed sources and merging, so writes are cheap but reads are heavier. Real systems often hybridize: push for normal accounts, pull for very high-follower producers.",
+      "b": "Wrong. The difference is where the fan-out work happens (write time vs read time) and its cost profile, not the transport protocol.",
+      "c": "Backwards. Push makes reads fast (precomputed feed) and writes expensive; pull makes reads expensive (query at read time) and writes cheap.",
+      "d": "Both are used in practice. Push is in fact common precisely because it gives fast reads; it does not inherently introduce unbounded delay."
+    }
+  },
+  {
+    "id": "sd-backpressure-001",
+    "domain": "system-design",
+    "topic": "backpressure",
+    "difficulty": "hard",
+    "question": "A streaming consumer cannot keep up with producer throughput and its in-memory buffer is growing without bound, risking out-of-memory crashes. Which response constitutes genuine backpressure (rather than a workaround that just defers the failure)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Keep enlarging the consumer's buffer (and the broker's retention) so it can hold more in-flight messages."
+      },
+      {
+        "id": "b",
+        "text": "Propagate the slowness upstream: the consumer pulls at its own sustainable rate (or signals the producer to slow), so the queue/log absorbs the lag and the producer is throttled rather than overwhelming the consumer."
+      },
+      {
+        "id": "c",
+        "text": "Silently drop the oldest buffered messages whenever the buffer is near full so it never overflows."
+      },
+      {
+        "id": "d",
+        "text": "Spin up unlimited consumer threads on the same machine so more messages are processed concurrently."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. Backpressure is the mechanism by which a slow downstream stage regulates the rate of upstream stages so the system runs at the slowest component's sustainable throughput. In a pull-based log like Kafka this is natural: the consumer fetches only what it can handle and the unconsumed data sits durably in the log as lag, throttling effective end-to-end rate without unbounded buffering. In push systems it is implemented via credit/flow-control signals that tell the producer to slow down.",
+      "a": "Enlarging buffers only postpones the overflow; an unbounded or perpetually growing buffer converts a rate mismatch into a delayed crash and adds latency. It is the opposite of applying backpressure.",
+      "c": "Dropping data may be an acceptable load-shedding policy for some workloads, but it is data loss, not backpressure; it sacrifices completeness rather than regulating the producer's rate.",
+      "d": "Adding consumers/threads can raise capacity up to a point (and only up to the partition count for a Kafka group), but unbounded local threads contend for finite CPU/IO and do not regulate the producer; if the real bottleneck is downstream, this still collapses without flow control."
+    }
+  },
+  {
+    "id": "sd-consumer-offsets-001",
+    "domain": "system-design",
+    "topic": "consumer-offsets",
+    "difficulty": "medium",
+    "question": "A Kafka consumer is configured with enable.auto.commit=true (offsets committed periodically) and does its message processing asynchronously after each poll. After a crash, some already-acknowledged work is repeated. Why, and what delivery semantic does this configuration give?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Auto-commit gives exactly-once: the repetition must be a bug, since committed offsets are never reprocessed."
+      },
+      {
+        "id": "b",
+        "text": "Auto-commit can advance the offset on a timer for messages that have been polled but whose async processing has not finished; a crash then reprocesses everything after the last committed offset, yielding at-least-once delivery."
+      },
+      {
+        "id": "c",
+        "text": "Auto-commit commits the offset only after processing fully completes, so a crash can only lose messages, giving at-most-once delivery."
+      },
+      {
+        "id": "d",
+        "text": "Auto-commit disables offset tracking entirely, so the consumer always restarts from the beginning of the topic."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "b": "Correct. Periodic auto-commit advances committed offsets based on what has been polled/returned, on a timer, independent of whether your asynchronous processing has actually finished. On restart the consumer resumes from the last committed offset, so any messages whose processing was in flight or not yet durably effected are reprocessed. The resulting semantic is at-least-once (duplicates possible), which is why idempotent handling or manual commit-after-processing is recommended.",
+      "a": "Wrong. Auto-commit does not provide exactly-once; reprocessing after a crash is the expected behavior, not a bug.",
+      "c": "That would describe committing only after processing completes (manual commit), and even then a crash between processing and commit causes reprocessing, not loss. Periodic auto-commit specifically does not wait for your async processing to finish.",
+      "d": "Auto-commit still tracks and persists offsets to the __consumer_offsets topic; it does not restart from the beginning except when there is no committed offset and auto.offset.reset is set to earliest."
+    }
+  },
+  {
+    "id": "sd-horizontal-vs-vertical-scaling-001",
+    "domain": "system-design",
+    "topic": "horizontal-vs-vertical-scaling",
+    "difficulty": "easy",
+    "question": "A monolithic API server is CPU-saturated at peak. The team debates moving from a single large machine to a fleet of identical smaller machines behind a load balancer. Which statement most accurately captures the defining advantage of horizontal scaling (scale-out) over vertical scaling (scale-up)?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Horizontal scaling raises a single node's ceiling indefinitely, so you never have to change the application architecture."
+      },
+      {
+        "id": "b",
+        "text": "Horizontal scaling adds more nodes so capacity is not bounded by the largest available machine and a single node failure removes only a fraction of capacity, but it requires the workload to be distributable across nodes."
+      },
+      {
+        "id": "c",
+        "text": "Horizontal scaling is always cheaper per unit of work than vertical scaling because commodity machines cost less than large ones."
+      },
+      {
+        "id": "d",
+        "text": "Horizontal scaling eliminates the need for a load balancer because clients pick a node at random."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Backwards: indefinitely raising a single node's ceiling describes vertical scaling, which is exactly what hits a hardware limit. And distributing work across many nodes usually does force architectural concerns (statelessness, shared state, coordination), so the claim of no architecture change is wrong.",
+      "b": "Correct. Scale-out grows capacity by adding commodity nodes, so you are not capped by the biggest single machine, and losing one node degrades rather than kills the service. The catch is that the workload must be partitionable/parallelizable across nodes, which is why statelessness and load distribution matter.",
+      "c": "Tempting but not a guarantee. Horizontal scaling adds coordination, networking, and operational overhead; per-unit cost depends on the workload. Vertical scaling can be cheaper and simpler up to a point. Cost is a trade-off, not the defining advantage.",
+      "d": "Wrong. Spreading traffic across many nodes is precisely why you need a load balancer (or equivalent routing). Random client-side selection is one strategy but horizontal scaling does not remove the need to distribute requests."
+    }
+  },
+  {
+    "id": "sd-stateless-services-sticky-sessions-001",
+    "domain": "system-design",
+    "topic": "stateless-services-sticky-sessions",
+    "difficulty": "medium",
+    "question": "A web tier keeps each user's login session in the local memory of whichever node served the first request, so the load balancer is configured with sticky sessions (session affinity) to keep returning a user to the same node. The team now wants to autoscale this tier aggressively. Why does in-memory session state plus sticky sessions undermine smooth horizontal scaling, and what is the standard fix?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Sticky sessions overload the load balancer's CPU; the fix is to add a second load balancer in front of the first."
+      },
+      {
+        "id": "b",
+        "text": "Because session state lives on one node, removing that node (e.g. during scale-in or a crash) logs those users out and load is unevenly pinned to existing nodes; the fix is to make services stateless by externalizing session state to a shared store so any node can serve any request."
+      },
+      {
+        "id": "c",
+        "text": "Sticky sessions force every request through the database, so the fix is to add a read replica."
+      },
+      {
+        "id": "d",
+        "text": "Sticky sessions break TLS termination, so the fix is to move TLS to the application nodes."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Sticky-session routing is cheap for the load balancer and is not a CPU bottleneck. Stacking load balancers does not address the real problem, which is node-local state being lost when nodes change.",
+      "b": "Correct. With state pinned to a node, scale-in or a node failure destroys those sessions and new nodes cannot pick up affinitied users, so scaling is neither smooth nor even. The canonical remedy is to make the tier stateless by moving session data to a shared external store (e.g. Redis or a signed token), so the load balancer can route any request to any node and nodes can be added or removed freely.",
+      "c": "Sticky sessions route a user to the same app node; they do not force every request to the database. Adding a read replica addresses read scaling, not the lost-state-on-node-change problem.",
+      "d": "Session affinity and TLS termination are independent concerns. Sticky sessions do not break TLS, and relocating TLS termination does nothing about the in-memory session state being tied to a single node."
+    }
+  },
+  {
+    "id": "sd-distributed-rate-limiting-001",
+    "domain": "system-design",
+    "topic": "distributed-rate-limiting",
+    "difficulty": "hard",
+    "question": "A rate limiter must enforce a global per-API-key limit across a fleet of 20 stateless gateway nodes behind a load balancer. Each node initially enforces the limit using only its own in-process counter. Clients routinely exceed the intended global limit. What is the core problem, and what is the standard way to enforce a correct global limit?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Per-node local counters each allow the full limit, so the effective global limit is up to N times too high; the fix is to track counts in a shared centralized store (e.g. Redis) that all nodes read and increment atomically, accepting some added latency and a dependency on that store."
+      },
+      {
+        "id": "b",
+        "text": "The load balancer is using round-robin instead of least-connections; switching the algorithm makes the local counters correct."
+      },
+      {
+        "id": "c",
+        "text": "The limit is too low; raising each node's local limit to the global value makes the aggregate correct."
+      },
+      {
+        "id": "d",
+        "text": "Local counters are correct as long as clocks are synchronized with NTP; the only fix needed is tighter time synchronization across nodes."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. If every one of N nodes independently permits the full limit, the fleet collectively allows up to N times the intended rate, and uneven routing makes it worse. Enforcing a true global limit requires shared state: a centralized counter (commonly Redis with atomic INCR/Lua or a token-bucket script) that all nodes consult, trading a little latency and a dependency on that store for correctness. Sloppier-but-cheaper variants divide the budget per node or sync counters periodically.",
+      "b": "The LB algorithm changes how requests spread but does not make N independent local counters add up to one global limit. Even perfectly even routing still lets each node permit its own full share, overshooting the global cap.",
+      "c": "This makes it strictly worse: raising each local limit to the global value means each node alone allows the entire global budget, so the aggregate balloons to N times the limit.",
+      "d": "Clock sync helps align time windows but does nothing about the fundamental issue that counts are not shared. Twenty perfectly-synchronized independent counters still sum to far more than one global limit."
+    }
+  },
+  {
+    "id": "sd-load-shedding-001",
+    "domain": "system-design",
+    "topic": "load-shedding",
+    "difficulty": "medium",
+    "question": "During an unexpected traffic spike, a service's queues back up, latency climbs, and it begins to crash under load, taking down even the requests it could have served. The team adds load shedding. What does load shedding do, and why is it preferable to letting the overloaded service absorb everything?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "It buffers all excess requests in a large in-memory queue so none are dropped and every client is eventually served."
+      },
+      {
+        "id": "b",
+        "text": "It proactively rejects or degrades a portion of incoming requests once the service nears its capacity limit, so the requests it does accept are served within SLO instead of the whole service collapsing and serving nothing well."
+      },
+      {
+        "id": "c",
+        "text": "It automatically provisions more servers so the spike is absorbed without rejecting any traffic."
+      },
+      {
+        "id": "d",
+        "text": "It retries failed requests more aggressively so transient overload is smoothed out."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Unbounded buffering is the failure mode load shedding prevents. Queueing everything during sustained overload just grows latency without bound and eventually exhausts memory; the service still falls over. Shedding deliberately drops work rather than queueing it forever.",
+      "b": "Correct. Load shedding sacrifices some requests on purpose (rejecting with a fast 429/503 or serving a degraded response) once the system is near capacity, so the accepted subset stays within latency targets. A partial, predictable degradation beats a total collapse where retries and queue buildup cause even serveable requests to fail.",
+      "c": "That describes autoscaling, which is complementary but slower to react (boot time, signal lag) and bounded by limits/cost. During a sudden spike you still need shedding to protect the service until capacity catches up.",
+      "d": "Aggressive retries during overload make things worse, adding more load to an already saturated service (a retry storm). Load shedding is about rejecting work, the opposite of piling on retries."
+    }
+  },
+  {
+    "id": "sd-bulkhead-pattern-001",
+    "domain": "system-design",
+    "topic": "bulkhead-pattern",
+    "difficulty": "medium",
+    "question": "A service calls three downstream dependencies (A, B, C) from a single shared pool of worker threads. When dependency C becomes slow, all threads end up blocked waiting on C, and calls to the healthy A and B also start timing out. Which resilience pattern directly addresses this, and how?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The circuit breaker pattern, by retrying C until it recovers."
+      },
+      {
+        "id": "b",
+        "text": "The bulkhead pattern, by isolating resources (e.g. separate thread pools or connection pools per dependency) so a slowdown in C exhausts only C's pool and leaves capacity for A and B."
+      },
+      {
+        "id": "c",
+        "text": "The retry-with-backoff pattern, by spacing out the calls to C until threads free up."
+      },
+      {
+        "id": "d",
+        "text": "The cache-aside pattern, by serving C's responses from cache so threads never block."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "A circuit breaker (stopping calls to C after failures) is complementary and would help here, but the specific problem described is resource exhaustion of a shared pool, and retrying C is the opposite of what a breaker does. The pattern named for isolating that shared resource is the bulkhead.",
+      "b": "Correct. The bulkhead pattern partitions resources so one dependency cannot consume them all, just as a ship's bulkheads keep one flooded compartment from sinking the vessel. Giving each dependency its own thread/connection pool means C's slowness saturates only C's pool, preserving capacity to keep serving A and B.",
+      "c": "Backoff controls retry timing; it does nothing about the shared pool being fully occupied by in-flight slow calls to C. The threads are blocked on outstanding requests, not on retry scheduling.",
+      "d": "Caching C's responses might reduce calls to C, but it does not solve the general problem of one slow dependency monopolizing a shared resource pool, and it is inapplicable when responses are not cacheable. Resource isolation is the bulkhead, not caching."
+    }
+  },
+  {
+    "id": "sd-retry-jitter-backoff-001",
+    "domain": "system-design",
+    "topic": "retry-jitter-backoff",
+    "difficulty": "hard",
+    "question": "After a downstream service briefly fails, thousands of clients all retry. Even with exponential backoff, the clients keep retrying in synchronized waves (at ~1s, ~2s, ~4s, ...), repeatedly hammering the recovering service at the same instants. What is the standard refinement, and why does it help?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "Switch from exponential to fixed-interval retries so the load is constant and predictable."
+      },
+      {
+        "id": "b",
+        "text": "Add randomized jitter to the backoff delays so clients' retries spread out over time instead of synchronizing into thundering-herd spikes that repeatedly overwhelm the recovering service."
+      },
+      {
+        "id": "c",
+        "text": "Remove backoff entirely and retry immediately, since the service has more capacity right after recovery."
+      },
+      {
+        "id": "d",
+        "text": "Increase the maximum retry count so eventually enough attempts succeed."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Fixed intervals make synchronization worse, not better: all clients that failed together would now retry together at every identical tick, producing periodic spikes. The problem is correlation in timing, which a constant interval does not break.",
+      "b": "Correct. Exponential backoff alone still leaves retries phase-aligned, so adding jitter (randomizing each delay, e.g. full or decorrelated jitter) decorrelates the clients and smears retry traffic across the interval. This flattens the thundering-herd spikes and gives the recovering service a steadier, survivable load.",
+      "c": "Immediate retries with no backoff are exactly the thundering herd that overwhelms a fragile, just-recovered service, turning a brief outage into a sustained one. This is the opposite of the fix.",
+      "d": "More retries increases total load and prolongs the herd; it does not address the synchronized timing that causes the repeated spikes. The fix is spreading retries out, not attempting more of them."
+    }
+  },
+  {
+    "id": "sd-autoscaling-signals-001",
+    "domain": "system-design",
+    "topic": "autoscaling-signals",
+    "difficulty": "medium",
+    "question": "A team autoscales a latency-sensitive request/response service purely on average CPU utilization with a target of 70%. The service spends most of its time waiting on a slow downstream call (I/O-bound), so CPU stays low even as request latency and queue depth climb, and the autoscaler never adds capacity. What is the lesson about choosing autoscaling signals?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "CPU is always the correct autoscaling signal; the target should simply be lowered to 30%."
+      },
+      {
+        "id": "b",
+        "text": "The scaling signal should reflect the actual bottleneck and user-facing health (e.g. request concurrency/queue depth, latency, or requests-per-instance), because a single resource metric like CPU can miss saturation when the workload is bound by something else such as I/O."
+      },
+      {
+        "id": "c",
+        "text": "Scaling on request latency directly is the only valid approach and CPU should never be used."
+      },
+      {
+        "id": "d",
+        "text": "The service should be scaled manually because autoscaling cannot work for I/O-bound workloads."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "Lowering the CPU target does not help when CPU is not the bottleneck at all; the service can be overloaded at the queue/downstream level while CPU stays flat. A lower threshold would still ignore the real saturation signal.",
+      "b": "Correct. The right autoscaling signal must track where the system actually saturates and what users experience. For an I/O-bound service, in-flight concurrency, queue depth, requests-per-instance, or latency reflect load far better than CPU. The general lesson: pick a signal aligned with the bottleneck and user-facing SLOs, not a default resource metric.",
+      "c": "Overcorrection. Latency can be a good scaling signal, but it is noisy and lagging, and CPU is perfectly appropriate for CPU-bound workloads. The point is matching the signal to the bottleneck, not banning CPU outright.",
+      "d": "Autoscaling works fine for I/O-bound services when driven by an appropriate signal (e.g. concurrency or requests-per-instance). Falling back to manual scaling is unnecessary and discards the benefit of automation."
+    }
+  },
+  {
+    "id": "sd-p99-vs-average-latency-001",
+    "domain": "system-design",
+    "topic": "p99-vs-average-latency",
+    "difficulty": "medium",
+    "question": "A dashboard shows the service's average (mean) latency is a healthy 40 ms, yet users complain about slowness and the p99 latency is 1,200 ms. Why is p99 often a better SLO target than the average, especially for user-facing services?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "The average is computed incorrectly; a correctly computed mean would equal the p99."
+      },
+      {
+        "id": "b",
+        "text": "The average hides the tail of slow requests, while p99 (the value 99% of requests are faster than) exposes the worst experiences that real users hit, which matter because a single page often makes many backend calls and is gated by its slowest one."
+      },
+      {
+        "id": "c",
+        "text": "p99 is just the average plus a fixed safety margin, so it always tracks the mean."
+      },
+      {
+        "id": "d",
+        "text": "The average is better; p99 should be ignored because only 1% of requests exceed it and those users do not matter."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "The mean is not miscomputed here; a low mean with a high p99 is exactly what a right-skewed latency distribution looks like. The mean and a high percentile legitimately differ; one is not an error of the other.",
+      "b": "Correct. Latency distributions are typically long-tailed, so a few very slow requests barely move the mean but define the p99. Tail latency matters because a single user action often fans out into many backend calls and is bounded by the slowest, so a 1% per-call tail can affect a large fraction of page loads. Tracking p99 (and p999) surfaces the experience the average conceals.",
+      "c": "p99 is a distribution percentile, not a fixed offset from the mean. In a skewed distribution it can be many multiples of the average, and the gap varies with the shape, so it does not track the mean by a constant margin.",
+      "d": "This dismisses the worst-served users and ignores fan-out amplification: with many calls per request, a 1% tail surfaces far more often than 1% of page loads. Tail latency is a primary driver of perceived slowness, which is why teams set SLOs on high percentiles."
+    }
+  },
+  {
+    "id": "sd-capacity-estimation-001",
+    "domain": "system-design",
+    "topic": "capacity-estimation",
+    "difficulty": "medium",
+    "question": "You must estimate the steady-state server count for a service expected to handle 60 million requests per day, where each request needs about 50 ms of CPU time and each server has 4 usable cores. Using a back-of-the-envelope approach (and ignoring peak-vs-average bursting for a first pass), which estimate and method is right?",
+    "choices": [
+      {
+        "id": "a",
+        "text": "60M/day is ~694 requests/sec on average; at 50 ms each that is ~34.7 core-seconds of work per second, so ~35 cores, i.e. about 9 servers of 4 cores for the average load (then add headroom for peaks and redundancy)."
+      },
+      {
+        "id": "b",
+        "text": "60M requests/day divided by 4 cores = 15M, so you need 15 million servers."
+      },
+      {
+        "id": "c",
+        "text": "Because each request takes 50 ms, one server handles 20 requests/sec, so 60M/day needs exactly one server."
+      },
+      {
+        "id": "d",
+        "text": "Latency per request does not affect server count; only the daily request total matters, so size purely on storage for 60M records."
+      }
+    ],
+    "answer": "a",
+    "explanations": {
+      "a": "Correct. Convert to a rate: 60,000,000 / 86,400 s ~= 694 req/s. Each request consumes 50 ms = 0.05 core-seconds of CPU, so demand is 694 * 0.05 ~= 34.7 core-seconds per second, i.e. ~35 busy cores. At 4 cores/server that is ~9 servers to cover average load, after which you add headroom for peak-to-average ratio, target utilization, and redundancy. This rate-times-cost-per-request method is the standard capacity estimate.",
+      "b": "Dimensionally meaningless: dividing a per-day count by cores-per-server yields neither a rate nor a server count. It ignores that requests are spread over 86,400 seconds and that each consumes only a fraction of a core-second.",
+      "c": "It conflates per-core throughput with per-server throughput and forgets the rate. One core does ~20 req/s at 50 ms each, and a 4-core server ~80 req/s, but average demand is ~694 req/s, so one server is far short.",
+      "d": "Per-request CPU cost is central to compute sizing; the daily total alone cannot tell you how many cores you need. Storage sizing is a separate dimension and does not determine the server count for serving request load."
+    }
+  },
+  {
+    "id": "sd-scaling-bottleneck-reliability-001",
+    "domain": "system-design",
+    "topic": "scaling-bottleneck-reliability",
+    "difficulty": "hard",
+    "question": "A company scales its stateless web tier horizontally to dozens of nodes, but all of them talk to a single primary database that is now the throughput bottleneck and a single point of failure. Which characterization and next step is most accurate?",
+    "diagram": {
+      "kind": "mermaid",
+      "alt": "Many stateless web nodes all funnel into one shared primary database, illustrating that the stateless tier scales out while the single database remains the bottleneck and single point of failure.",
+      "source": "graph TD\n  C[Clients] --> LB[Load Balancer]\n  LB --> W1[Web node 1]\n  LB --> W2[Web node 2]\n  LB --> W3[Web node 3]\n  W1 --> DB[(Single primary DB)]\n  W2 --> DB\n  W3 --> DB"
+    },
+    "choices": [
+      {
+        "id": "a",
+        "text": "Adding more web nodes will keep improving throughput indefinitely, since the tier is stateless."
+      },
+      {
+        "id": "b",
+        "text": "Scaling a stateless tier only moves the bottleneck to the next shared resource; the database now caps throughput and is a single point of failure, so the next steps target it (read replicas, caching, sharding/partitioning, and a failover replica for availability)."
+      },
+      {
+        "id": "c",
+        "text": "The fix is to make the web tier stateful so it can answer without the database."
+      },
+      {
+        "id": "d",
+        "text": "The single database is fine because stateless web nodes never overload a database."
+      }
+    ],
+    "answer": "b",
+    "explanations": {
+      "a": "False. Once the web tier is no longer the constraint, piling on more web nodes just sends more concurrent load to the shared database and yields no further throughput, a classic serial-bottleneck limit. Statelessness scales the tier, not the shared dependency behind it.",
+      "b": "Correct. Horizontal scaling relocates the bottleneck to whatever resource is still shared, here the single primary DB, which now bounds throughput and is also a single point of failure. The appropriate next moves act on that resource: offload reads with replicas and caching, partition/shard writes to spread load, and add a standby/failover replica to remove the SPOF.",
+      "c": "Making the web tier stateful would sacrifice the easy horizontal scaling you just achieved and reintroduce node-affinity and lost-state problems, without fixing the underlying need for a durable shared datastore. The data still has to live somewhere consistent.",
+      "d": "Stateless web nodes absolutely can overload a database; in fact scaling them out increases concurrent connections and queries to the single primary, which is precisely why it became the bottleneck and the SPOF."
+    }
+  }
+]
