@@ -42,6 +42,9 @@ One-time setup:
   **Mermaid diagram** (lazy-loaded).
 - **Progress** (answered / correct / accuracy) is saved per-device in `localStorage` under a
   versioned object (`sdq:progress`), and survives reloads.
+- **Installable PWA:** a web app manifest + service worker make it installable and fully
+  **offline** after the first load (content is static). Test it via `npm run preview` (the
+  service worker only runs on a production build).
 
 ## Adding questions (content-as-data)
 
