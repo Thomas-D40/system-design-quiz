@@ -2,15 +2,17 @@
   --bg: #0f1117;
   --panel: #1a1d27;
   --panel-soft: #232734;
-  --text: #e6e8ee;
-  --muted: #9aa0ad;
-  --accent: #6ea8fe;
+  --text: #eef0f6;
+  --muted: #b2b8c6;
+  --accent: #7fb2ff;
   --accent-strong: #4a86f7;
-  --good: #2ea36b;
-  --good-bg: #16301f;
-  --bad: #d65a5a;
-  --bad-bg: #331a1a;
-  --border: #2c3140;
+  --good: #3fd089;
+  --good-bg: #15402a;
+  --good-text: #8ff0bd;
+  --bad: #ff7b78;
+  --bad-bg: #4a2120;
+  --bad-text: #ffb3b1;
+  --border: #353b4c;
   --radius: 12px;
 }
 
@@ -118,6 +120,42 @@ body {
   color: var(--muted);
 }
 
+/* Quiz length picker */
+.length-heading {
+  margin: 1.25rem 0 0.6rem;
+  font-size: 0.95rem;
+}
+.length-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.length-option {
+  min-width: 3rem;
+  padding: 0.6rem 0.9rem;
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.length-option:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+.length-option.active {
+  border-color: var(--accent);
+  background: var(--accent-strong);
+  color: #fff;
+}
+.length-option:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Question */
 .question-meta {
   display: flex;
@@ -168,6 +206,76 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* Session review (which questions were missed + explanations) */
+.review {
+  margin: 1.5rem 0;
+  text-align: left;
+}
+.review-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.review-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.review-clear {
+  margin: 1.5rem 0;
+  color: var(--good-text);
+  font-weight: 600;
+}
+.review-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.review-item {
+  padding: 1rem 1.1rem;
+  background: var(--panel-soft);
+  border: 1px solid var(--border);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+}
+.review-item.ko {
+  border-left-color: var(--bad);
+}
+.review-item.ok {
+  border-left-color: var(--good);
+}
+.review-question {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+}
+.review-line {
+  margin: 0.5rem 0 0.15rem;
+}
+.review-tag {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+.review-line.wrong .review-tag {
+  color: var(--bad-text);
+}
+.review-line.correct .review-tag {
+  color: var(--good-text);
+}
+.review-explanation {
+  margin: 0.15rem 0 0.5rem;
+  font-size: 0.92rem;
+  color: var(--muted);
 }
 
 /* Glossary terms + hover/focus tooltip */
@@ -282,16 +390,22 @@ body {
   font-weight: 700;
   color: var(--muted);
 }
+.choice.chosen .choice-key {
+  color: var(--text);
+}
 .choice.correct {
   border-color: var(--good);
   background: var(--good-bg);
+}
+.choice.correct .choice-key {
+  color: var(--good-text);
 }
 .choice.wrong {
   border-color: var(--bad);
   background: var(--bad-bg);
 }
-.choice.chosen .choice-key {
-  color: var(--text);
+.choice.wrong .choice-key {
+  color: var(--bad-text);
 }
 
 /* Feedback */
@@ -313,6 +427,12 @@ body {
   margin: 0 0 0.5rem;
   font-weight: 700;
   font-size: 1.05rem;
+}
+.feedback.good .verdict {
+  color: var(--good-text);
+}
+.feedback.bad .verdict {
+  color: var(--bad-text);
 }
 .explanation {
   margin: 0.5rem 0;
@@ -357,4 +477,29 @@ body {
   color: var(--muted);
   font-size: 0.85rem;
   margin: 0.5rem 0 0;
+}
+
+/* Smartphone: tighter gutters, roomier tap targets, and choice text that stays
+   comfortably legible rather than shrinking with the viewport. */
+@media (max-width: 600px) {
+  .app {
+    padding: 1rem 0.75rem 3rem;
+  }
+  .panel {
+    padding: 1.15rem;
+  }
+  .question-text {
+    font-size: 1.1rem;
+  }
+  .choice {
+    padding: 0.9rem 0.95rem;
+    font-size: 1.02rem;
+    gap: 0.65rem;
+  }
+  .choice-key {
+    min-width: 1.1rem;
+  }
+  .explanation {
+    font-size: 0.98rem;
+  }
 }

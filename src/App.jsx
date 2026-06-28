@@ -9,6 +9,11 @@ import Scoreboard from './components/Scoreboard.jsx'
 import SessionSummary from './components/SessionSummary.jsx'
 
 const DOMAINS_KEY = 'sdq:domains'
+const LENGTH_KEY = 'sdq:length'
+
+// Selectable quiz lengths (number of questions per session).
+export const LENGTHS = [30, 45, 60, 75, 90, 120, 150]
+const DEFAULT_LENGTH = 30
 
 // Per-domain question counts, shown on the selection screen.
 const COUNTS = ALL_QUESTIONS.reduce((acc, q) => {
@@ -36,20 +41,55 @@ function saveSelectedDomains(domains) {
   }
 }
 
+function loadLength() {
+  try {
+    const n = parseInt(localStorage.getItem(LENGTH_KEY), 10)
+    if (LENGTHS.includes(n)) return n
+  } catch {
+    // ignore
+  }
+  return DEFAULT_LENGTH
+}
+
+function saveLength(n) {
+  try {
+    localStorage.setItem(LENGTH_KEY, String(n))
+  } catch {
+    // ignore
+  }
+}
+
 export default function App() {
   const [screen, setScreen] = useState('select') // 'select' | 'practice' | 'summary'
   const [selected, setSelected] = useState(loadSelectedDomains)
+  const [length, setLength] = useState(loadLength)
   const [progress, setProgress] = useState(loadProgress)
 
   // A session is a shuffled deck of distinct questions plus a cursor into it.
   const [deck, setDeck] = useState([])
   const [pos, setPos] = useState(0)
-  const [sessionLog, setSessionLog] = useState([]) // [{ id, correct }] for this session
+  const [sessionLog, setSessionLog] = useState([]) // [{ id, choiceId, correct }] for this session
 
   const pool = useMemo(() => eligiblePool(ALL_QUESTIONS, selected), [selected])
   const current = deck[pos] ?? null
   const isLast = deck.length > 0 && pos === deck.length - 1
   const sessionCorrect = sessionLog.filter((e) => e.correct).length
+
+  // A length the current pool can actually satisfy: if the chosen length exceeds
+  // the eligible pool, fall back to the largest length that fits (or the whole pool).
+  const effectiveLength =
+    length <= pool.length
+      ? length
+      : LENGTHS.filter((l) => l <= pool.length).pop() ?? pool.length
+
+  // Per-failed-question review data for the summary: pair each logged answer with
+  // its full question object so we can show the explanation and the right answer.
+  const review = useMemo(() => {
+    const byId = new Map(deck.map((q) => [q.id, q]))
+    return sessionLog
+      .map((e) => ({ question: byId.get(e.id), choiceId: e.choiceId, correct: e.correct }))
+      .filter((r) => r.question)
+  }, [sessionLog, deck])
 
   function toggleDomain(domain) {
     setSelected((prev) => {
@@ -61,8 +101,13 @@ export default function App() {
     })
   }
 
+  function chooseLength(n) {
+    setLength(n)
+    saveLength(n)
+  }
+
   function beginSession() {
-    setDeck(shuffle(pool))
+    setDeck(shuffle(pool).slice(0, effectiveLength))
     setPos(0)
     setSessionLog([])
     setScreen('practice')
@@ -75,7 +120,10 @@ export default function App() {
 
   function handleAnswered(result) {
     setProgress((prev) => recordAnswer(prev, result))
-    setSessionLog((prev) => [...prev, { id: result.questionId, correct: result.correct }])
+    setSessionLog((prev) => [
+      ...prev,
+      { id: result.questionId, choiceId: result.choiceId, correct: result.correct },
+    ])
   }
 
   function handleNext() {
@@ -113,6 +161,10 @@ export default function App() {
             counts={COUNTS}
             selected={selected}
             onToggle={toggleDomain}
+            lengths={LENGTHS}
+            length={effectiveLength}
+            maxAvailable={pool.length}
+            onChooseLength={chooseLength}
             onStart={startPractice}
           />
         )}
@@ -152,6 +204,7 @@ export default function App() {
           <SessionSummary
             total={deck.length}
             correct={sessionCorrect}
+            review={review}
             onRestart={beginSession}
             onChangeDomains={backToSelect}
           />

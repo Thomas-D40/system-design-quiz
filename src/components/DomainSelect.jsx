@@ -6,13 +6,23 @@ const DOMAIN_LABELS = {
   mcp: 'MCP architecture',
 }
 
-export default function DomainSelect({ domains, counts, selected, onToggle, onStart }) {
+export default function DomainSelect({
+  domains,
+  counts,
+  selected,
+  onToggle,
+  lengths,
+  length,
+  maxAvailable,
+  onChooseLength,
+  onStart,
+}) {
   const canStart = selected.length > 0
 
   return (
     <section className="panel">
       <h2>Choose what to practice</h2>
-      <p className="muted">Pick one or more domains, then start an endless practice session.</p>
+      <p className="muted">Pick one or more domains and a quiz length, then start.</p>
 
       <ul className="domain-list">
         {domains.map((domain) => (
@@ -29,6 +39,31 @@ export default function DomainSelect({ domains, counts, selected, onToggle, onSt
           </li>
         ))}
       </ul>
+
+      <h3 className="length-heading">How many questions?</h3>
+      <div className="length-options" role="group" aria-label="Quiz length">
+        {lengths.map((n) => {
+          const tooMany = n > maxAvailable
+          return (
+            <button
+              key={n}
+              type="button"
+              className={`length-option ${length === n ? 'active' : ''}`}
+              aria-pressed={length === n}
+              disabled={tooMany}
+              title={tooMany ? `Only ${maxAvailable} questions in the selected domain(s)` : undefined}
+              onClick={() => onChooseLength(n)}
+            >
+              {n}
+            </button>
+          )
+        })}
+      </div>
+      {canStart && (
+        <p className="hint">
+          This session will have {Math.min(length, maxAvailable)} questions, drawn without repeats.
+        </p>
+      )}
 
       <button className="primary" disabled={!canStart} onClick={onStart}>
         Start practising

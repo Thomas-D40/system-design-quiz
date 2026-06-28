@@ -1253,7 +1253,7 @@
     ],
     "answer": "a",
     "explanations": {
-      "a": "Correct. Liveness answers 'is this process broken and unrecoverable?' — a failure triggers a container restart. Readiness answers 'can this instance serve requests right now?' — a failure pulls the pod out of the Service's endpoints so no traffic is routed to it, but the container keeps running. During cache warm-up you want readiness failing (no traffic yet) while liveness passes (don't kill it).",
+      "a": "Correct. Liveness answers 'is this process broken and unrecoverable?' — a failure triggers a container restart. Readiness answers 'can this instance serve requests right now?' — a failure pulls the pod out of the Service's endpoints so no traffic is routed to it, but the container keeps running. During cache warm-up you want readiness failing (no traffic yet) while liveness passes (don't kill it). (In modern Kubernetes a dedicated startup probe is the idiomatic guard for slow initialization — it holds off liveness checks until the app has started, so a slow warm-up never trips a restart.)",
       "b": "This swaps the two probes. Restarting on liveness failure and de-routing on readiness failure is the correct mapping; doing the opposite would restart a healthy-but-warming pod and keep sending traffic to a deadlocked one — the exact failure modes the two probes are designed to prevent.",
       "c": "The probes serve different purposes and have different consequences (restart vs. traffic removal); they are not redundant. Conflating them means a slow-starting but healthy pod gets killed instead of simply being held out of rotation until ready.",
       "d": "Readiness failure does not delete the pod or trigger a deployment — it only removes the pod from Service endpoints and is reversible the moment the probe passes again. And liveness failure is very much acted upon: it restarts the container, it is not merely informational."
@@ -1676,7 +1676,7 @@
     "explanations": {
       "a": "Correct. Silo (DB-per-tenant) gives strong isolation, easy per-tenant restore, and natural blast-radius/noisy-neighbor limits, at the cost of managing many databases, which becomes expensive and operationally heavy at thousands of tenants. Pool (shared schema) inverts these trade-offs.",
       "b": "Wrong. Shared-schema co-mingles tenants in the same tables; isolation is logical (enforced by tenant_id filtering / row-level security), not physical file separation. It is the weaker-isolation model.",
-      "c": "Partly true that you avoid tenant filtering, but it is NOT cheapest at scale; the per-database operational and licensing overhead grows linearly and typically makes silo more expensive than pool for large tenant counts.",
+      "c": "Partly true that you avoid tenant filtering, but it is NOT cheapest at scale; the per-database operational and licensing overhead grows substantially — at least linearly, and often worse at thousands of tenants — and typically makes silo more expensive than pool for large tenant counts.",
       "d": "Overstated. Shared-schema risk from a forgotten filter is real but mitigable, e.g., Postgres row-level security, query builders that always inject tenant_id, or middleware. Saying no control can help is incorrect."
     }
   },

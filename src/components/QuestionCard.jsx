@@ -2,16 +2,29 @@
 // This component owns the per-question answer state; remounting it (via a `key`
 // on the question id) resets that state cleanly for each new question.
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Diagram from './Diagram.jsx'
 import GlossaryText from './GlossaryText.jsx'
+import { shuffle } from '../lib/selection.js'
 
 export default function QuestionCard({ question, position, total, isLast, onAnswered, onNext }) {
   const [choiceId, setChoiceId] = useState(null)
+  // Lock synchronously on the first pick. `revealed` is derived from state, which
+  // updates a tick later — a fast double-click could otherwise fire onAnswered
+  // twice before the re-render disables the buttons, double-counting the answer.
+  const answeredRef = useRef(false)
+  // Randomize choice order once per question (this component remounts per id, so
+  // the order stays stable while answering). Display labels are derived from the
+  // on-screen position; the stored choice id still drives answer/explanation
+  // lookups. This keeps the correct answer from always sitting in the same slot.
+  const [choices] = useState(() => shuffle(question.choices))
+  const labelOf = (id) =>
+    String.fromCharCode(65 + choices.findIndex((c) => c.id === id))
   const revealed = choiceId !== null
 
   function handlePick(id) {
-    if (revealed) return // locked once answered (US-03)
+    if (answeredRef.current) return // locked once answered (US-03)
+    answeredRef.current = true
     setChoiceId(id)
     onAnswered({
       questionId: question.id,
@@ -36,7 +49,7 @@ export default function QuestionCard({ question, position, total, isLast, onAnsw
       {question.diagram && <Diagram diagram={question.diagram} />}
 
       <ul className="choice-list">
-        {question.choices.map((choice) => {
+        {choices.map((choice, idx) => {
           const states = []
           if (revealed) {
             if (choice.id === question.answer) states.push('correct')
@@ -50,7 +63,7 @@ export default function QuestionCard({ question, position, total, isLast, onAnsw
                 disabled={revealed}
                 onClick={() => handlePick(choice.id)}
               >
-                <span className="choice-key">{choice.id.toUpperCase()}</span>
+                <span className="choice-key">{String.fromCharCode(65 + idx)}</span>
                 <span className="choice-text">{choice.text}</span>
               </button>
             </li>
@@ -63,13 +76,13 @@ export default function QuestionCard({ question, position, total, isLast, onAnsw
           <p className="verdict">{isCorrect ? 'Correct' : 'Not quite'}</p>
 
           <p className="explanation">
-            <strong>Your choice ({choiceId.toUpperCase()}):</strong>{' '}
+            <strong>Your choice ({labelOf(choiceId)}):</strong>{' '}
             <GlossaryText text={question.explanations[choiceId]} />
           </p>
 
           {!isCorrect && (
             <p className="explanation">
-              <strong>Correct answer ({question.answer.toUpperCase()}):</strong>{' '}
+              <strong>Correct answer ({labelOf(question.answer)}):</strong>{' '}
               <GlossaryText text={question.explanations[question.answer]} />
             </p>
           )}
